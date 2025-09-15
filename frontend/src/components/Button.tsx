@@ -17,13 +17,13 @@ export function Button({
   children,
   ...props
 }: ButtonProps) {
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-stellar-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
   
   const variantClasses = {
-    primary: 'bg-stellar-600 text-white hover:bg-stellar-700',
-    secondary: 'bg-gray-600 text-white hover:bg-gray-700',
-    outline: 'border border-stellar-600 text-stellar-600 hover:bg-stellar-50',
-    ghost: 'text-stellar-600 hover:bg-stellar-50'
+    primary: 'bg-primary text-primary-foreground hover:bg-primary/90',
+    secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/90',
+    outline: 'border border-primary text-primary hover:bg-primary/10',
+    ghost: 'text-primary hover:bg-primary/10'
   };
 
   const sizeClasses = {

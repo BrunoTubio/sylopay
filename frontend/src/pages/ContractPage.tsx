@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Mail, Phone, FileText, Check } from 'lucide-react';
+import { ArrowLeft, User, Mail, Phone, FileText, Check, CreditCard, Shield, ArrowRight } from 'lucide-react';
 import { useBNPL } from '../hooks/useBNPL';
-import Button from '../components/Button';
-import ProgressBar from '../components/ProgressBar';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Input } from '../components/ui/input';
+import { Badge } from '../components/ui/badge';
+import { Progress } from '../components/ui/progress';
+import Logo from '../components/Logo';
 import { Customer } from '../types';
 
 export function ContractPage() {
@@ -37,226 +41,269 @@ export function ContractPage() {
   const isFormValid = formData.fullName && formData.email && formData.stellarPublicKey && termsAccepted;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
+    <div className="min-h-screen bg-background">
+      {/* Modern Header */}
+      <header className="border-b border-border/40 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <button
+            <Button
+              variant="ghost"
               onClick={actions.prevStep}
-              className="flex items-center text-gray-600 hover:text-gray-900"
+              className="flex items-center"
             >
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              Voltar
-            </button>
-            <h1 className="text-lg font-semibold">Informações do Cliente</h1>
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+            <div className="flex items-center space-x-3">
+              <Logo size="sm" />
+              <h1 className="text-lg font-semibold">Customer Information</h1>
+            </div>
             <div className="w-16" />
           </div>
         </div>
       </header>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <ProgressBar currentStep={state.currentStep} className="mb-8" />
+        {/* Progress Indicator */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
+            <span>Step 3 of 5</span>
+            <span>60% Complete</span>
+          </div>
+          <Progress value={60} className="h-2" />
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Form */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                Dados Pessoais
-              </h2>
+          {/* Main Form */}
+          <div className="lg:col-span-2 space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <User className="w-5 h-5 mr-2" />
+                  Personal Information
+                </CardTitle>
+                <CardDescription>
+                  Please provide your details to create the BNPL contract
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label htmlFor="fullName" className="text-sm font-medium">
+                        Full Name *
+                      </label>
+                      <Input
+                        id="fullName"
+                        name="fullName"
+                        value={formData.fullName}
+                        onChange={handleInputChange}
+                        placeholder="Enter your full name"
+                        required
+                        className="h-10"
+                      />
+                    </div>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
-                    Nome Completo *
-                  </label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                    <input
-                      type="text"
-                      id="fullName"
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={handleInputChange}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-stellar-500 focus:border-stellar-500"
-                      placeholder="Seu nome completo"
-                      required
-                    />
+                    <div className="space-y-2">
+                      <label htmlFor="email" className="text-sm font-medium">
+                        Email Address *
+                      </label>
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        placeholder="your@email.com"
+                        required
+                        className="h-10"
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                    E-mail *
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-stellar-500 focus:border-stellar-500"
-                      placeholder="seu@email.com"
-                      required
-                    />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label htmlFor="phone" className="text-sm font-medium">
+                        Phone Number
+                      </label>
+                      <Input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        placeholder="+55 11 99999-9999"
+                        className="h-10"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label htmlFor="documentNumber" className="text-sm font-medium">
+                        Document Number
+                      </label>
+                      <Input
+                        id="documentNumber"
+                        name="documentNumber"
+                        value={formData.documentNumber}
+                        onChange={handleInputChange}
+                        placeholder="000.000.000-00"
+                        className="h-10"
+                      />
+                    </div>
                   </div>
-                </div>
 
-                <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                    Telefone
-                  </label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                    <input
-                      type="tel"
-                      id="phone"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-stellar-500 focus:border-stellar-500"
-                      placeholder="+55 11 99999-9999"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="documentNumber" className="block text-sm font-medium text-gray-700 mb-2">
-                    CPF
-                  </label>
-                  <div className="relative">
-                    <FileText className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
-                    <input
-                      type="text"
-                      id="documentNumber"
-                      name="documentNumber"
-                      value={formData.documentNumber}
-                      onChange={handleInputChange}
-                      className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-stellar-500 focus:border-stellar-500"
-                      placeholder="000.000.000-00"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="stellarPublicKey" className="block text-sm font-medium text-gray-700 mb-2">
-                    Stellar Public Key *
-                  </label>
-                  <input
-                    type="text"
-                    id="stellarPublicKey"
-                    name="stellarPublicKey"
-                    value={formData.stellarPublicKey}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-stellar-500 focus:border-stellar-500 font-mono text-sm"
-                    placeholder="GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-                    required
-                  />
-                  <p className="mt-1 text-xs text-gray-500">
-                    Sua chave pública da conta Stellar para receber os pagamentos
-                  </p>
-                </div>
-
-                {/* Terms and Conditions */}
-                <div className="border-t pt-6">
-                  <div className="flex items-start">
-                    <input
-                      type="checkbox"
-                      id="terms"
-                      checked={termsAccepted}
-                      onChange={(e) => setTermsAccepted(e.target.checked)}
-                      className="mt-1 h-4 w-4 text-stellar-600 focus:ring-stellar-500 border-gray-300 rounded"
-                    />
-                    <label htmlFor="terms" className="ml-3 text-sm text-gray-700">
-                      Li e aceito os{' '}
-                      <a href="#" className="text-stellar-600 hover:text-stellar-500">
-                        Termos e Condições
-                      </a>{' '}
-                      e a{' '}
-                      <a href="#" className="text-stellar-600 hover:text-stellar-500">
-                        Política de Privacidade
-                      </a>
+                  <div className="space-y-2">
+                    <label htmlFor="stellarPublicKey" className="text-sm font-medium">
+                      Stellar Public Key *
                     </label>
+                    <Input
+                      id="stellarPublicKey"
+                      name="stellarPublicKey"
+                      value={formData.stellarPublicKey}
+                      onChange={handleInputChange}
+                      placeholder="GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                      required
+                      className="font-mono text-sm h-10"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Your Stellar account public key for receiving payments
+                    </p>
                   </div>
-                </div>
 
-                <Button
-                  type="submit"
-                  variant="primary"
-                  size="lg"
-                  disabled={!isFormValid}
-                  className="w-full"
-                >
-                  Criar Contrato BNPL
-                </Button>
-              </form>
-            </div>
+                  {/* Terms and Conditions */}
+                  <Card className="bg-muted/50">
+                    <CardContent className="pt-6">
+                      <div className="flex items-start space-x-3">
+                        <input
+                          type="checkbox"
+                          id="terms"
+                          checked={termsAccepted}
+                          onChange={(e) => setTermsAccepted(e.target.checked)}
+                          className="mt-1 h-4 w-4 text-primary focus:ring-primary border-border rounded"
+                        />
+                        <div className="text-sm">
+                          <label htmlFor="terms" className="font-medium">
+                            I agree to the Terms and Conditions
+                          </label>
+                          <p className="text-muted-foreground">
+                            By checking this box, you agree to our{' '}
+                            <a href="#" className="text-primary hover:underline">
+                              Terms of Service
+                            </a>{' '}
+                            and{' '}
+                            <a href="#" className="text-primary hover:underline">
+                              Privacy Policy
+                            </a>
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Button
+                    type="submit"
+                    size="lg"
+                    disabled={!isFormValid}
+                    className="w-full h-12"
+                  >
+                    <span className="mr-2">Create BNPL Contract</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Summary */}
+          {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm p-6 sticky top-8">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                Resumo do Pedido
-              </h3>
-
-              <div className="space-y-4">
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Produto:</span>
-                  <span className="font-medium">{state.product?.name}</span>
-                </div>
-
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Valor Total:</span>
-                  <span className="font-medium">
-                    {state.product ? parseFloat(state.product.price).toFixed(2) : '0'} XLM
-                  </span>
-                </div>
-
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Parcelas:</span>
-                  <span className="font-medium">
-                    {state.selectedPlan?.installmentsCount}x de {' '}
-                    {state.selectedPlan ? parseFloat(state.selectedPlan.installmentAmount).toFixed(2) : '0'} XLM
-                  </span>
-                </div>
-
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Taxa de Juros:</span>
-                  <span className="font-medium text-green-600">0% (Sem juros)</span>
-                </div>
-
-                <div className="border-t pt-4">
-                  <div className="flex justify-between font-semibold">
-                    <span>Total a Pagar:</span>
-                    <span className="text-stellar-600">
-                      {state.selectedPlan ? parseFloat(state.selectedPlan.totalAmount).toFixed(2) : '0'} XLM
-                    </span>
+            <Card className="sticky top-8">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <CreditCard className="w-5 h-5 mr-2" />
+                  Order Summary
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Product */}
+                <div className="flex items-center space-x-3 p-3 bg-muted/50 rounded-lg">
+                  <div className="w-12 h-12 bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg flex items-center justify-center">
+                    <span className="text-lg">📱</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm truncate">{state.product?.name}</p>
+                    <p className="text-xs text-muted-foreground">Premium smartphone</p>
                   </div>
                 </div>
 
-                <div className="bg-stellar-50 rounded-lg p-4 mt-6">
-                  <h4 className="font-medium text-stellar-900 mb-2">Próximos Passos:</h4>
-                  <ul className="space-y-2 text-sm text-stellar-700">
-                    <li className="flex items-center">
-                      <Check className="w-4 h-4 mr-2 text-stellar-600" />
-                      Criação do smart contract
-                    </li>
-                    <li className="flex items-center">
-                      <Check className="w-4 h-4 mr-2 text-stellar-600" />
-                      Pagamento instantâneo ao merchant
-                    </li>
-                    <li className="flex items-center">
-                      <Check className="w-4 h-4 mr-2 text-stellar-600" />
-                      Cronograma de parcelas criado
-                    </li>
-                  </ul>
+                {/* Pricing Details */}
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Product Price:</span>
+                    <span className="font-medium">
+                      {state.product ? parseFloat(state.product.price).toFixed(2) : '0'} XLM
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Payment Plan:</span>
+                    <span className="font-medium">
+                      {state.selectedPlan?.installmentsCount}x installments
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Each Payment:</span>
+                    <span className="font-medium">
+                      {state.selectedPlan ? parseFloat(state.selectedPlan.installmentAmount).toFixed(2) : '0'} XLM
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Interest Rate:</span>
+                    <span className="font-medium text-primary">0% (Interest-free)</span>
+                  </div>
+
+                  <div className="border-t pt-3">
+                    <div className="flex justify-between font-semibold">
+                      <span>Total Amount:</span>
+                      <span className="text-primary">
+                        {state.selectedPlan ? parseFloat(state.selectedPlan.totalAmount).toFixed(2) : '0'} XLM
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+
+                {/* Next Steps */}
+                <Card className="bg-primary/5 border-primary/20">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-sm flex items-center">
+                      <Shield className="w-4 h-4 mr-2" />
+                      What Happens Next
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <ul className="space-y-2 text-xs">
+                      <li className="flex items-center">
+                        <Check className="w-3 h-3 mr-2 text-primary" />
+                        Smart contract creation
+                      </li>
+                      <li className="flex items-center">
+                        <Check className="w-3 h-3 mr-2 text-primary" />
+                        Instant payment to merchant
+                      </li>
+                      <li className="flex items-center">
+                        <Check className="w-3 h-3 mr-2 text-primary" />
+                        Payment schedule setup
+                      </li>
+                      <li className="flex items-center">
+                        <Check className="w-3 h-3 mr-2 text-primary" />
+                        Blockchain verification
+                      </li>
+                    </ul>
+                  </CardContent>
+                </Card>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

@@ -34,7 +34,7 @@ export function ProgressBar({ currentStep, className = '' }: ProgressBarProps) {
                   ${isCompleted 
                     ? 'bg-success-500 border-success-500 text-white' 
                     : isCurrent 
-                    ? 'bg-stellar-500 border-stellar-500 text-white' 
+                    ? 'bg-primary border-primary text-primary-foreground' 
                     : 'bg-gray-100 border-gray-300 text-gray-400'
                   }
                 `}>
@@ -58,7 +58,7 @@ export function ProgressBar({ currentStep, className = '' }: ProgressBarProps) {
               <div className="mt-2 text-center">
                 <div className={`
                   text-xs font-medium
-                  ${isCurrent ? 'text-stellar-600' : isCompleted ? 'text-success-600' : 'text-gray-400'}
+                  ${isCurrent ? 'text-primary' : isCompleted ? 'text-success-600' : 'text-gray-400'}
                 `}>
                   {step.label}
                 </div>

@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, Calendar, DollarSign } from 'lucide-react';
+import { ArrowLeft, Check, Calendar, DollarSign, CreditCard, Zap, ArrowRight } from 'lucide-react';
 import { useBNPL } from '../hooks/useBNPL';
 import { QuotationOption } from '../types';
-import Button from '../components/Button';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Badge } from '../components/ui/badge';
+import { Progress } from '../components/ui/progress';
 import LoadingSpinner from '../components/LoadingSpinner';
-import ProgressBar from '../components/ProgressBar';
+import Logo from '../components/Logo';
 import apiService from '../services/api';
 
 export function QuotationPage() {
@@ -51,190 +54,236 @@ export function QuotationPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <LoadingSpinner size="lg" message="Calculando melhores opções de pagamento..." />
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center space-y-4">
+              <Logo size="lg" className="mb-4" />
+              <LoadingSpinner size="lg" />
+              <div className="text-center">
+                <h3 className="text-lg font-semibold">Calculating Payment Options</h3>
+                <p className="text-muted-foreground">Finding the best installment plans for you...</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
+    <div className="min-h-screen bg-background">
+      {/* Modern Header */}
+      <header className="border-b border-border/40 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <button
+            <Button
+              variant="ghost"
               onClick={actions.prevStep}
-              className="flex items-center text-gray-600 hover:text-gray-900"
+              className="flex items-center"
             >
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              Voltar
-            </button>
-            <h1 className="text-lg font-semibold">Opções de Pagamento</h1>
-            <div className="w-16" /> {/* Spacer */}
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+            <div className="flex items-center space-x-3">
+              <Logo size="sm" />
+              <h1 className="text-lg font-semibold">Payment Options</h1>
+            </div>
+            <div className="w-16" />
           </div>
         </div>
       </header>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Progress Bar */}
-        <ProgressBar currentStep={state.currentStep} className="mb-8" />
-
-        {/* Product Summary */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-          <div className="flex items-center space-x-4">
-            <div className="w-16 h-16 bg-gradient-to-br from-stellar-100 to-stellar-200 rounded-lg flex items-center justify-center">
-              <span className="text-2xl">📱</span>
-            </div>
-            <div className="flex-1">
-              <h2 className="text-lg font-semibold text-gray-900">
-                {state.product?.name}
-              </h2>
-              <p className="text-gray-600">
-                Valor total: <span className="font-semibold">{formatAmount(state.product?.price || '0')}</span>
-              </p>
-            </div>
+        {/* Progress Indicator */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
+            <span>Step 2 of 5</span>
+            <span>40% Complete</span>
           </div>
+          <Progress value={40} className="h-2" />
         </div>
 
+        {/* Product Summary */}
+        <Card className="mb-8">
+          <CardContent className="pt-6">
+            <div className="flex items-center space-x-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl flex items-center justify-center">
+                <span className="text-2xl">📱</span>
+              </div>
+              <div className="flex-1">
+                <h2 className="text-lg font-semibold text-foreground">
+                  {state.product?.name}
+                </h2>
+                <p className="text-muted-foreground">
+                  Total amount: <span className="font-semibold text-foreground">{formatAmount(state.product?.price || '0')}</span>
+                </p>
+              </div>
+              <Badge variant="secondary">Selected</Badge>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Payment Options */}
-        <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-gray-900 mb-6">
-            Escolha a melhor forma de pagamento:
-          </h3>
+        <div className="space-y-6">
+          <div>
+            <h3 className="text-2xl font-bold text-foreground mb-2">
+              Choose Your Payment Plan
+            </h3>
+            <p className="text-muted-foreground">
+              Select the installment option that works best for you
+            </p>
+          </div>
 
-          {quotationOptions.map((option, index) => (
-            <div
-              key={index}
-              className={`
-                bg-white rounded-lg shadow-sm border-2 transition-all cursor-pointer hover:shadow-md
-                ${state.selectedPlan?.installmentsCount === option.installmentsCount
-                  ? 'border-stellar-500 ring-2 ring-stellar-200'
-                  : 'border-gray-200 hover:border-stellar-300'
-                }
-              `}
-              onClick={() => handlePlanSelect(option)}
-            >
-              <div className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    {/* Option Header */}
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center space-x-3">
-                        <div className={`
-                          w-6 h-6 rounded-full border-2 flex items-center justify-center
-                          ${state.selectedPlan?.installmentsCount === option.installmentsCount
-                            ? 'border-stellar-500 bg-stellar-500'
-                            : 'border-gray-300'
-                          }
-                        `}>
-                          {state.selectedPlan?.installmentsCount === option.installmentsCount && (
-                            <Check className="w-4 h-4 text-white" />
-                          )}
-                        </div>
-                        <h4 className="text-lg font-semibold text-gray-900">
-                          {option.installmentsCount}x de {formatAmount(option.installmentAmount)}
+          <div className="grid gap-4">
+            {quotationOptions.map((option, index) => (
+              <Card
+                key={index}
+                className={`cursor-pointer transition-all hover:shadow-md ${
+                  state.selectedPlan?.installmentsCount === option.installmentsCount
+                    ? 'ring-2 ring-primary border-primary'
+                    : 'hover:border-primary/50'
+                }`}
+                onClick={() => handlePlanSelect(option)}
+              >
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      <div className={`
+                        w-6 h-6 rounded-full border-2 flex items-center justify-center
+                        ${state.selectedPlan?.installmentsCount === option.installmentsCount
+                          ? 'border-primary bg-primary'
+                          : 'border-muted'
+                        }
+                      `}>
+                        {state.selectedPlan?.installmentsCount === option.installmentsCount && (
+                          <Check className="w-4 h-4 text-primary-foreground" />
+                        )}
+                      </div>
+                      <div>
+                        <h4 className="text-xl font-bold text-foreground">
+                          {option.installmentsCount}x installments
                         </h4>
-                      </div>
-                      {option.installmentsCount === 2 && (
-                        <span className="bg-success-100 text-success-800 text-xs px-2 py-1 rounded-full font-medium">
-                          Mais Popular
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Option Details */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                      <div className="flex items-center space-x-2">
-                        <DollarSign className="w-4 h-4 text-gray-400" />
-                        <span className="text-gray-600">
-                          Total: <span className="font-medium">{formatAmount(option.totalAmount)}</span>
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Calendar className="w-4 h-4 text-gray-400" />
-                        <span className="text-gray-600">
-                          A cada {option.frequencyDays} dias
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Check className="w-4 h-4 text-green-500" />
-                        <span className="text-green-600 font-medium">
-                          {option.interestRate === '0.0000' ? 'Sem juros' : `Taxa: ${option.interestRate}%`}
-                        </span>
+                        <p className="text-muted-foreground">
+                          {formatAmount(option.installmentAmount)} per payment
+                        </p>
                       </div>
                     </div>
+                    {option.installmentsCount === 3 && (
+                      <Badge className="bg-primary text-primary-foreground">
+                        Most Popular
+                      </Badge>
+                    )}
+                  </div>
 
-                    {/* Payment Schedule Preview */}
-                    <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                      <h5 className="text-sm font-medium text-gray-900 mb-2">Cronograma de Pagamentos:</h5>
-                      <div className="space-y-1">
+                  {/* Payment Details */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div className="flex items-center space-x-2">
+                      <DollarSign className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">
+                        Total: <span className="font-medium text-foreground">{formatAmount(option.totalAmount)}</span>
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Calendar className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">
+                        Every {option.frequencyDays} days
+                      </span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Check className="w-4 h-4 text-primary" />
+                      <span className="text-sm font-medium text-primary">
+                        {option.interestRate === '0.0000' ? '0% interest' : `${option.interestRate}% rate`}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Payment Schedule */}
+                  <Card className="bg-muted/50">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-sm">Payment Schedule</CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <div className="space-y-2">
                         {Array.from({ length: option.installmentsCount }, (_, i) => (
                           <div key={i} className="flex justify-between text-sm">
-                            <span className="text-gray-600">
-                              {i + 1}ª parcela - {formatDate((i + 1) * option.frequencyDays)}
+                            <span className="text-muted-foreground">
+                              Payment {i + 1} - {formatDate((i + 1) * option.frequencyDays)}
                             </span>
                             <span className="font-medium">{formatAmount(option.installmentAmount)}</span>
                           </div>
                         ))}
                       </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
+                    </CardContent>
+                  </Card>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
 
         {/* Continue Button */}
         <div className="mt-8 flex justify-center">
           <Button
-            variant="primary"
             size="lg"
             disabled={!state.selectedPlan}
             onClick={() => state.selectedPlan && handlePlanSelect(state.selectedPlan)}
-            className="px-8"
+            className="w-full sm:w-auto px-8 h-12"
           >
-            Continuar com Plano Selecionado
+            <span className="mr-2">Continue with Selected Plan</span>
+            <ArrowRight className="w-4 h-4" />
           </Button>
         </div>
 
         {/* Benefits Section */}
-        <div className="mt-12 bg-stellar-50 rounded-lg p-6">
-          <h4 className="text-lg font-semibold text-stellar-900 mb-4">
-            Vantagens do Stellar BNPL
-          </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="flex items-start space-x-3">
-              <Check className="w-5 h-5 text-stellar-600 mt-0.5" />
-              <div>
-                <h5 className="font-medium text-stellar-900">Aprovação Instantânea</h5>
-                <p className="text-sm text-stellar-700">Sem análise de crédito demorada</p>
+        <Card className="mt-12">
+          <CardHeader>
+            <CardTitle className="text-xl">Why Choose SyloPay BNPL?</CardTitle>
+            <CardDescription>
+              Experience the future of payments with blockchain technology
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Zap className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <h5 className="font-semibold text-foreground">Instant Approval</h5>
+                  <p className="text-sm text-muted-foreground">No lengthy credit checks or waiting</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Check className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <h5 className="font-semibold text-foreground">Blockchain Security</h5>
+                  <p className="text-sm text-muted-foreground">Secured by Stellar network technology</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <CreditCard className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <h5 className="font-semibold text-foreground">Complete Transparency</h5>
+                  <p className="text-sm text-muted-foreground">Track everything on Stellar Explorer</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <DollarSign className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <h5 className="font-semibold text-foreground">No Hidden Fees</h5>
+                  <p className="text-sm text-muted-foreground">What you see is what you pay</p>
+                </div>
               </div>
             </div>
-            <div className="flex items-start space-x-3">
-              <Check className="w-5 h-5 text-stellar-600 mt-0.5" />
-              <div>
-                <h5 className="font-medium text-stellar-900">Blockchain Segura</h5>
-                <p className="text-sm text-stellar-700">Transações protegidas pela rede Stellar</p>
-              </div>
-            </div>
-            <div className="flex items-start space-x-3">
-              <Check className="w-5 h-5 text-stellar-600 mt-0.5" />
-              <div>
-                <h5 className="font-medium text-stellar-900">Transparência Total</h5>
-                <p className="text-sm text-stellar-700">Acompanhe tudo no Stellar Explorer</p>
-              </div>
-            </div>
-            <div className="flex items-start space-x-3">
-              <Check className="w-5 h-5 text-stellar-600 mt-0.5" />
-              <div>
-                <h5 className="font-medium text-stellar-900">Sem Taxas Ocultas</h5>
-                <p className="text-sm text-stellar-700">O que você vê é o que você paga</p>
-              </div>
-            </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

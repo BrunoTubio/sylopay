@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { ExternalLink, Calendar, DollarSign, CheckCircle, Clock, RefreshCw, Home } from 'lucide-react';
+import { ExternalLink, Calendar, DollarSign, CheckCircle, Clock, RefreshCw, Home, TrendingUp, Wallet, Activity, Star } from 'lucide-react';
 import { useBNPL } from '../hooks/useBNPL';
-import Button from '../components/Button';
-import ProgressBar from '../components/ProgressBar';
+import { Button } from '../components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
+import { Badge } from '../components/ui/badge';
+import { Progress } from '../components/ui/progress';
+import Logo from '../components/Logo';
 import apiService from '../services/api';
 import { StellarAccount } from '../types';
 
@@ -119,23 +122,28 @@ export function DashboardPage() {
   const progress = totalInstallments > 0 ? (paidInstallments / totalInstallments) * 100 : 0;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
+    <div className="min-h-screen bg-background">
+      {/* Modern Header */}
+      <header className="border-b border-border/40 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-bold text-stellar-900">Stellar BNPL Dashboard</h1>
+            <div className="flex items-center space-x-3">
+              <Logo size="md" />
+              <h1 className="text-xl font-bold text-foreground">SyloPay Dashboard</h1>
             </div>
             <div className="flex items-center space-x-4">
+              <Badge variant="secondary" className="hidden sm:flex">
+                <Activity className="w-3 h-3 mr-1" />
+                Active Contract
+              </Badge>
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
                 onClick={actions.resetFlow}
                 className="flex items-center"
               >
                 <Home className="w-4 h-4 mr-2" />
-                Nova Compra
+                New Purchase
               </Button>
             </div>
           </div>
@@ -143,211 +151,307 @@ export function DashboardPage() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <ProgressBar currentStep={state.currentStep} className="mb-8" />
-
-        {/* Success Message */}
-        <div className="bg-success-50 border border-success-200 rounded-lg p-6 mb-8">
-          <div className="flex">
-            <CheckCircle className="w-6 h-6 text-success-600" />
-            <div className="ml-3">
-              <h3 className="text-lg font-medium text-success-900">
-                Parabéns! Seu contrato BNPL foi criado com sucesso!
-              </h3>
-              <p className="text-success-700 mt-1">
-                Agora você pode acompanhar suas parcelas e verificar todas as transações na blockchain Stellar.
-              </p>
-            </div>
+        {/* Progress Indicator */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between text-sm text-muted-foreground mb-2">
+            <span>Step 5 of 5</span>
+            <span>100% Complete</span>
           </div>
+          <Progress value={100} className="h-2" />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Contract Overview */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Contract Summary */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-semibold text-gray-900">Resumo do Contrato</h2>
+        {/* Success Banner */}
+        <Card className="mb-8 border-green-500/20 bg-gradient-to-r from-green-500/5 to-primary/5">
+          <CardContent className="pt-6">
+            <div className="flex items-start space-x-4">
+              <div className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center flex-shrink-0">
+                <CheckCircle className="w-6 h-6 text-green-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-xl font-semibold text-foreground mb-2">
+                  🎉 Congratulations! Your BNPL Contract is Live!
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  Your contract has been successfully created on the Stellar blockchain. Track your installments and monitor all transactions with full transparency.
+                </p>
                 {state.contract && (
-                  <a
-                    href={state.contract.explorerUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center text-sm text-stellar-600 hover:text-stellar-700"
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    asChild
+                    className="border-green-500/30 text-green-600 hover:bg-green-500/10"
                   >
-                    Ver no Stellar Explorer
-                    <ExternalLink className="w-4 h-4 ml-1" />
-                  </a>
+                    <a
+                      href={state.contract.explorerUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center"
+                    >
+                      <ExternalLink className="w-4 h-4 mr-2" />
+                      View on Stellar Explorer
+                    </a>
+                  </Button>
                 )}
               </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="text-center p-4 bg-stellar-50 rounded-lg">
-                  <DollarSign className="w-8 h-8 text-stellar-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-stellar-900">
-                    {state.selectedPlan ? formatAmount(state.selectedPlan.totalAmount) : '0 XLM'}
-                  </div>
-                  <div className="text-sm text-stellar-700">Valor Total</div>
-                </div>
-
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <Calendar className="w-8 h-8 text-gray-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-gray-900">
-                    {state.selectedPlan?.installmentsCount || 0}x
-                  </div>
-                  <div className="text-sm text-gray-700">Parcelas</div>
-                </div>
-
-                <div className="text-center p-4 bg-success-50 rounded-lg">
-                  <CheckCircle className="w-8 h-8 text-success-600 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-success-900">{progress.toFixed(0)}%</div>
-                  <div className="text-sm text-success-700">Concluído</div>
-                </div>
-              </div>
-
-              {/* Progress Bar */}
-              <div className="mt-6">
-                <div className="flex justify-between text-sm text-gray-600 mb-2">
-                  <span>Progresso do Pagamento</span>
-                  <span>{paidInstallments} de {totalInstallments} parcelas pagas</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className="bg-success-600 h-2 rounded-full transition-all duration-300"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-              </div>
             </div>
+          </CardContent>
+        </Card>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Stats Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Total Amount</p>
+                      <p className="text-2xl font-bold text-foreground">
+                        {state.selectedPlan ? formatAmount(state.selectedPlan.totalAmount) : '0 XLM'}
+                      </p>
+                    </div>
+                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                      <DollarSign className="w-6 h-6 text-primary" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Installments</p>
+                      <p className="text-2xl font-bold text-foreground">
+                        {state.selectedPlan?.installmentsCount || 0}x
+                      </p>
+                    </div>
+                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                      <Calendar className="w-6 h-6 text-primary" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-muted-foreground">Progress</p>
+                      <p className="text-2xl font-bold text-foreground">{progress.toFixed(0)}%</p>
+                    </div>
+                    <div className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center">
+                      <TrendingUp className="w-6 h-6 text-green-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Payment Progress */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Payment Progress</CardTitle>
+                <CardDescription>
+                  {paidInstallments} of {totalInstallments} installments completed
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <Progress value={progress} className="h-3" />
+                  <div className="flex justify-between text-sm text-muted-foreground">
+                    <span>Started</span>
+                    <span>{progress.toFixed(0)}% Complete</span>
+                    <span>Finished</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Installment Schedule */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-6">Cronograma de Pagamentos</h3>
-              
-              <div className="space-y-4">
-                {installments.map((installment) => (
-                  <div 
-                    key={installment.number}
-                    className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:shadow-sm transition-shadow"
-                  >
-                    <div className="flex items-center space-x-4">
-                      {getStatusIcon(installment.status)}
-                      <div>
-                        <div className="font-medium text-gray-900">
-                          {installment.number}ª Parcela
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          Vencimento: {formatDate(installment.dueDate)}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Calendar className="w-5 h-5 mr-2" />
+                  Payment Schedule
+                </CardTitle>
+                <CardDescription>
+                  Track your upcoming and completed payments
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {installments.map((installment) => (
+                    <div 
+                      key={installment.number}
+                      className="flex items-center justify-between p-4 border border-border rounded-lg hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex items-center space-x-4">
+                        {getStatusIcon(installment.status)}
+                        <div>
+                          <div className="font-medium text-foreground">
+                            Payment #{installment.number}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            Due: {formatDate(installment.dueDate)}
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <div className="flex items-center space-x-4">
-                      <div className="text-right">
-                        <div className="font-semibold text-gray-900">
-                          {formatAmount(installment.amount)}
+                      <div className="flex items-center space-x-4">
+                        <div className="text-right">
+                          <div className="font-semibold text-foreground">
+                            {formatAmount(installment.amount)}
+                          </div>
+                          <Badge 
+                            variant={installment.status === 'paid' ? 'default' : 
+                                    installment.status === 'due' ? 'destructive' : 'secondary'}
+                            className="text-xs"
+                          >
+                            {getStatusText(installment.status)}
+                          </Badge>
                         </div>
-                        <span className={`
-                          inline-flex px-2 py-1 text-xs font-medium rounded-full
-                          ${getStatusColor(installment.status)}
-                        `}>
-                          {getStatusText(installment.status)}
-                        </span>
+                        
+                        {installment.status === 'due' && (
+                          <Button size="sm">
+                            Pay Now
+                          </Button>
+                        )}
                       </div>
-                      
-                      {installment.status === 'due' && (
-                        <Button size="sm" variant="primary">
-                          Pagar Agora
-                        </Button>
-                      )}
                     </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
-          {/* Account Info Sidebar */}
+          {/* Sidebar */}
           <div className="lg:col-span-1 space-y-6">
-            {/* Stellar Account */}
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Conta Stellar</h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => window.location.reload()}
-                >
-                  <RefreshCw className="w-4 h-4" />
-                </Button>
-              </div>
-
-              {accountInfo ? (
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm text-gray-600">Chave Pública:</label>
-                    <p className="font-mono text-xs text-gray-900 break-all bg-gray-50 p-2 rounded">
-                      {accountInfo.publicKey}
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="text-sm text-gray-600">Saldo:</label>
-                    <p className="text-lg font-semibold text-gray-900">
-                      {parseFloat(accountInfo.balance).toFixed(2)} XLM
-                    </p>
-                  </div>
-
-                  <a
-                    href={accountInfo.explorerUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center w-full text-sm text-stellar-600 hover:text-stellar-700 py-2 border border-stellar-200 rounded-lg hover:bg-stellar-50"
+            {/* Stellar Account Info */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center text-base">
+                    <Wallet className="w-4 h-4 mr-2" />
+                    Stellar Account
+                  </CardTitle>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => window.location.reload()}
                   >
-                    Ver no Stellar Explorer
-                    <ExternalLink className="w-4 h-4 ml-1" />
-                  </a>
+                    <RefreshCw className="w-4 h-4" />
+                  </Button>
                 </div>
-              ) : (
-                <div className="text-center py-4">
-                  <p className="text-sm text-gray-500">Carregando informações da conta...</p>
-                </div>
-              )}
-            </div>
+              </CardHeader>
+              <CardContent>
+                {accountInfo ? (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground">Public Key</label>
+                      <p className="font-mono text-xs break-all bg-muted p-2 rounded mt-1">
+                        {accountInfo.publicKey}
+                      </p>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-medium text-muted-foreground">Balance</label>
+                      <p className="text-lg font-bold text-primary mt-1">
+                        {parseFloat(accountInfo.balance).toFixed(2)} XLM
+                      </p>
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full"
+                      asChild
+                    >
+                      <a
+                        href={accountInfo.explorerUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center"
+                      >
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        View on Explorer
+                      </a>
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="text-center py-4">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+                    <p className="text-sm text-muted-foreground">Loading account info...</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
 
             {/* Contract Details */}
             {state.contract && (
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Detalhes do Contrato</h3>
-                
-                <div className="space-y-3 text-sm">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Contract Details</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
                   <div>
-                    <span className="text-gray-600">ID:</span>
-                    <p className="font-mono text-xs text-gray-900 break-all">{state.contract.id}</p>
+                    <label className="text-xs font-medium text-muted-foreground">Contract ID</label>
+                    <p className="font-mono text-xs break-all">{state.contract.id}</p>
                   </div>
                   
                   <div>
-                    <span className="text-gray-600">Hash:</span>
-                    <p className="font-mono text-xs text-gray-900 break-all">{state.contract.stellarTxHash}</p>
+                    <label className="text-xs font-medium text-muted-foreground">Transaction Hash</label>
+                    <p className="font-mono text-xs break-all">{state.contract.stellarTxHash}</p>
                   </div>
                   
                   <div>
-                    <span className="text-gray-600">Status:</span>
-                    <p className="font-medium text-success-600 capitalize">{state.contract.status}</p>
+                    <label className="text-xs font-medium text-muted-foreground">Status</label>
+                    <div className="flex items-center mt-1">
+                      <Badge variant="default" className="bg-green-500 text-green-50">
+                        <CheckCircle className="w-3 h-3 mr-1" />
+                        {state.contract.status}
+                      </Badge>
+                    </div>
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             )}
 
+            {/* Rating Card */}
+            <Card className="bg-primary/5 border-primary/20">
+              <CardContent className="pt-6">
+                <div className="text-center">
+                  <div className="flex justify-center mb-3">
+                    {[1,2,3,4,5].map((star) => (
+                      <Star key={star} className="w-5 h-5 text-yellow-500 fill-current" />
+                    ))}
+                  </div>
+                  <h4 className="font-semibold text-foreground mb-2">Love SyloPay?</h4>
+                  <p className="text-xs text-muted-foreground mb-4">
+                    Share your experience and help others discover the future of payments.
+                  </p>
+                  <Button variant="outline" size="sm" className="w-full">
+                    Rate Experience
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
             {/* Support */}
-            <div className="bg-stellar-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold text-stellar-900 mb-4">Precisa de Ajuda?</h3>
-              <p className="text-sm text-stellar-700 mb-4">
-                Nossa equipe está pronta para te ajudar com qualquer dúvida sobre seu contrato BNPL.
-              </p>
-              <Button variant="outline" size="sm" className="w-full">
-                Entrar em Contato
-              </Button>
-            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Need Help?</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Our support team is ready to help with any questions about your BNPL contract.
+                </p>
+                <Button variant="outline" size="sm" className="w-full">
+                  Contact Support
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

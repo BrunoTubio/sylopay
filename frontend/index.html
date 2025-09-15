@@ -4,25 +4,25 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/stellar-icon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Stellar BNPL - Buy Now, Pay Later on Blockchain. Parcele suas compras sem juros usando a rede Stellar." />
-    <meta name="keywords" content="stellar, bnpl, blockchain, cryptocurrency, parcelamento, fintech" />
-    <meta name="author" content="Hackathon Team" />
+    <meta name="description" content="SyloPay - Buy Now, Pay Later on Blockchain. Parcele suas compras sem juros usando a rede Stellar." />
+    <meta name="keywords" content="sylopay, stellar, bnpl, blockchain, cryptocurrency, parcelamento, fintech" />
+    <meta name="author" content="SyloPay Team" />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://stellar-bnpl.demo" />
-    <meta property="og:title" content="Stellar BNPL - Buy Now, Pay Later on Blockchain" />
+    <meta property="og:url" content="https://sylopay.demo" />
+    <meta property="og:title" content="SyloPay - Buy Now, Pay Later on Blockchain" />
     <meta property="og:description" content="Parcele suas compras sem juros usando a rede Stellar. Aprovação instantânea e transparência total." />
-    <meta property="og:image" content="/stellar-bnpl-preview.png" />
+    <meta property="og:image" content="/sylopay-logo.jpeg" />
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://stellar-bnpl.demo" />
-    <meta property="twitter:title" content="Stellar BNPL - Buy Now, Pay Later on Blockchain" />
+    <meta property="twitter:url" content="https://sylopay.demo" />
+    <meta property="twitter:title" content="SyloPay - Buy Now, Pay Later on Blockchain" />
     <meta property="twitter:description" content="Parcele suas compras sem juros usando a rede Stellar. Aprovação instantânea e transparência total." />
-    <meta property="twitter:image" content="/stellar-bnpl-preview.png" />
+    <meta property="twitter:image" content="/sylopay-logo.jpeg" />
 
-    <title>Stellar BNPL - Buy Now, Pay Later on Blockchain</title>
+    <title>SyloPay - Buy Now, Pay Later on Blockchain</title>
     
     <!-- Preconnect to external domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,7 +32,7 @@
     <style>
       body {
         font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        background-color: #f9fafb;
+        background-color: #101010;
         margin: 0;
       }
       
@@ -42,26 +42,21 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+        background: linear-gradient(135deg, #101010 0%, #1a1a1a 100%);
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         z-index: 9999;
-        color: white;
+        color: #F4F3EF;
       }
       
       .loading-logo {
-        width: 64px;
-        height: 64px;
-        background: white;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-        margin-bottom: 16px;
+        width: 80px;
+        height: auto;
+        margin-bottom: 24px;
         animation: pulse 2s infinite;
+        border-radius: 8px;
       }
       
       @keyframes pulse {
@@ -70,23 +65,26 @@
       }
       
       .loading-text {
-        font-size: 18px;
-        font-weight: 600;
+        font-size: 24px;
+        font-weight: 700;
         margin-bottom: 8px;
+        color: #F4F3EF;
       }
       
       .loading-subtext {
-        font-size: 14px;
-        opacity: 0.9;
+        font-size: 16px;
+        opacity: 0.8;
+        color: #FF4317;
+        font-weight: 500;
       }
     </style>
   </head>
   <body>
     <!-- Loading screen -->
     <div id="loading-screen" class="loading-screen">
-      <div class="loading-logo">⭐</div>
-      <div class="loading-text">Stellar BNPL</div>
-      <div class="loading-subtext">Carregando plataforma...</div>
+      <img src="/sylopay-logo.jpeg" alt="SyloPay" class="loading-logo" />
+      <div class="loading-text">SyloPay</div>
+      <div class="loading-subtext">Buy Now, Pay Later on Blockchain</div>
     </div>
     
     <div id="root"></div>
