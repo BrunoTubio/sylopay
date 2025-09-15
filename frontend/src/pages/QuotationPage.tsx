@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, Calendar, DollarSign, CreditCard, Zap, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Check, Calendar, DollarSign, CreditCard, Zap, ArrowRight, Calculator, TrendingDown } from 'lucide-react';
 import { useBNPL } from '../hooks/useBNPL';
 import { QuotationOption } from '../types';
 import { Button } from '../components/ui/button';
@@ -9,13 +9,17 @@ import { Badge } from '../components/ui/badge';
 import { Progress } from '../components/ui/progress';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Logo from '../components/Logo';
+import PricingCalculator from '../components/PricingCalculator';
 import apiService from '../services/api';
+import { PricingBreakdown } from '../services/pricingService';
 
 export function QuotationPage() {
   const { state, actions } = useBNPL();
   const navigate = useNavigate();
   const [quotationOptions, setQuotationOptions] = useState<QuotationOption[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showPricingDetails, setShowPricingDetails] = useState(false);
+  const [selectedPlanPricing, setSelectedPlanPricing] = useState<PricingBreakdown | null>(null);
 
   useEffect(() => {
     const fetchQuotation = async () => {
@@ -126,13 +130,24 @@ export function QuotationPage() {
 
         {/* Payment Options */}
         <div className="space-y-6">
-          <div>
-            <h3 className="text-2xl font-bold text-foreground mb-2">
-              Choose Your Payment Plan
-            </h3>
-            <p className="text-muted-foreground">
-              Select the installment option that works best for you
-            </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-2xl font-bold text-foreground mb-2">
+                Choose Your Payment Plan
+              </h3>
+              <p className="text-muted-foreground">
+                Select the installment option that works best for you
+              </p>
+            </div>
+            <Button
+              variant={showPricingDetails ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowPricingDetails(!showPricingDetails)}
+              className="flex items-center"
+            >
+              <Calculator className="w-4 h-4 mr-2" />
+              {showPricingDetails ? "Hide" : "Show"} Fee Breakdown
+            </Button>
           </div>
 
           <div className="grid gap-4">
@@ -221,6 +236,28 @@ export function QuotationPage() {
             ))}
           </div>
         </div>
+
+        {/* Pricing Details Section */}
+        {showPricingDetails && state.selectedPlan && (
+          <Card className="mt-6 border-blue-500/20 bg-gradient-to-r from-blue-500/5 to-primary/5">
+            <CardHeader>
+              <div className="flex items-center space-x-2">
+                <TrendingDown className="w-5 h-5 text-blue-600" />
+                <CardTitle>Complete Fee Transparency</CardTitle>
+              </div>
+              <CardDescription>
+                Blockchain-verified pricing powered by Blend Protocol
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PricingCalculator
+                amount={parseFloat(state.product?.price || '0')}
+                installments={state.selectedPlan.installmentsCount}
+                onPricingUpdate={(pricing) => setSelectedPlanPricing(pricing)}
+              />
+            </CardContent>
+          </Card>
+        )}
 
         {/* Continue Button */}
         <div className="mt-8 flex justify-center">

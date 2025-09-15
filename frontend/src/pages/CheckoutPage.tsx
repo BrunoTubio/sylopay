@@ -1,18 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingCart, Star, Shield, Zap, CreditCard, ArrowRight } from 'lucide-react';
+import { ShoppingCart, Star, Shield, Zap, CreditCard, ArrowRight, TrendingDown, RefreshCw } from 'lucide-react';
 import { useBNPL } from '../hooks/useBNPL';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import Logo from '../components/Logo';
 import { DEMO_PRODUCT } from '../types';
+import pricingService, { BlendRate } from '../services/pricingService';
 
 export function CheckoutPage() {
   const { state, actions } = useBNPL();
   const navigate = useNavigate();
   const product = state.product || DEMO_PRODUCT;
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [blendRate, setBlendRate] = useState<BlendRate | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const productImages = [
     '/samsung-s25-ultra-main.jpg',
@@ -21,6 +24,25 @@ export function CheckoutPage() {
     '/samsung-s25-ultra-angle1.jpg',
     '/samsung-s25-ultra-angle2.jpg'
   ];
+
+  useEffect(() => {
+    const fetchBlendRates = async () => {
+      setLoading(true);
+      try {
+        const rates = await pricingService.getBlendRates();
+        setBlendRate(rates);
+      } catch (error) {
+        console.error('Error fetching Blend rates:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBlendRates();
+    // Refresh rates every 30 seconds
+    const interval = setInterval(fetchBlendRates, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleBNPLClick = () => {
     actions.setProduct(product);
@@ -218,10 +240,33 @@ export function CheckoutPage() {
               <div className="flex items-center justify-center space-x-4 text-sm text-muted-foreground">
                 <span>Split in up to 4x</span>
                 <span>•</span>
-                <span>0% interest</span>
+                <span className="flex items-center">
+                  {loading ? (
+                    <RefreshCw className="w-3 h-3 animate-spin mr-1" />
+                  ) : blendRate ? (
+                    <>
+                      <TrendingDown className="w-3 h-3 mr-1 text-green-500" />
+                      <span className="font-semibold text-foreground">
+                        {blendRate.borrowRate.toFixed(1)}% APR
+                      </span>
+                    </>
+                  ) : (
+                    "Low rates"
+                  )}
+                </span>
                 <span>•</span>
                 <span>Instant approval</span>
               </div>
+              
+              {/* Dynamic Rate Badge */}
+              {blendRate && (
+                <div className="mt-3 flex justify-center">
+                  <Badge variant="secondary" className="bg-green-500/10 text-green-600 border-green-500/20">
+                    <TrendingDown className="w-3 h-3 mr-1" />
+                    Rate powered by Blend Protocol • {blendRate.utilization.toFixed(0)}% pool utilization
+                  </Badge>
+                </div>
+              )}
             </div>
 
             {/* Features */}

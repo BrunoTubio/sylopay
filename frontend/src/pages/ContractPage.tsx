@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Mail, Phone, FileText, Check, CreditCard, Shield, ArrowRight } from 'lucide-react';
+import { ArrowLeft, User, Mail, Phone, FileText, Check, CreditCard, Shield, ArrowRight, Calculator, TrendingDown, Info } from 'lucide-react';
 import { useBNPL } from '../hooks/useBNPL';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
@@ -9,6 +9,7 @@ import { Badge } from '../components/ui/badge';
 import { Progress } from '../components/ui/progress';
 import Logo from '../components/Logo';
 import { Customer } from '../types';
+import pricingService, { PricingBreakdown } from '../services/pricingService';
 
 export function ContractPage() {
   const { state, actions } = useBNPL();
@@ -23,6 +24,29 @@ export function ContractPage() {
     }
   );
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [pricingBreakdown, setPricingBreakdown] = useState<PricingBreakdown | null>(null);
+  const [loadingPricing, setLoadingPricing] = useState(false);
+
+  useEffect(() => {
+    const calculatePricing = async () => {
+      if (!state.product || !state.selectedPlan) return;
+      
+      setLoadingPricing(true);
+      try {
+        const pricing = await pricingService.calculateDynamicPricing(
+          parseFloat(state.product.price),
+          state.selectedPlan.installmentsCount
+        );
+        setPricingBreakdown(pricing);
+      } catch (error) {
+        console.error('Error calculating pricing:', error);
+      } finally {
+        setLoadingPricing(false);
+      }
+    };
+
+    calculatePricing();
+  }, [state.product, state.selectedPlan]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -272,6 +296,79 @@ export function ContractPage() {
                     </div>
                   </div>
                 </div>
+
+                {/* Fee Breakdown */}
+                {pricingBreakdown && (
+                  <Card className="bg-gradient-to-r from-green-500/5 to-blue-500/5 border-green-500/20">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-sm flex items-center justify-between">
+                        <span className="flex items-center">
+                          <Calculator className="w-4 h-4 mr-2" />
+                          Complete Fee Transparency
+                        </span>
+                        <Badge variant="secondary" className="bg-green-500/10 text-green-600 border-green-500/20">
+                          <TrendingDown className="w-3 h-3 mr-1" />
+                          {pricingBreakdown.savings.competitiveAdvantage}
+                        </Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-0 space-y-4">
+                      {/* Merchant Costs */}
+                      <div className="space-y-2">
+                        <h5 className="text-xs font-semibold text-muted-foreground flex items-center">
+                          <Info className="w-3 h-3 mr-1" />
+                          What the Merchant Pays
+                        </h5>
+                        <div className="bg-background rounded p-2 space-y-1">
+                          <div className="flex justify-between text-xs">
+                            <span className="text-muted-foreground">Processing Fee ({pricingService.formatPercent(pricingBreakdown.merchantFee)})</span>
+                            <span className="font-medium">{pricingService.formatXLM(pricingBreakdown.merchantFeeAmount)}</span>
+                          </div>
+                          <div className="flex justify-between text-xs">
+                            <span className="text-muted-foreground">Transaction Fee</span>
+                            <span className="font-medium">{pricingService.formatXLM(pricingBreakdown.transactionFee)}</span>
+                          </div>
+                          <div className="flex justify-between text-xs font-semibold pt-1 border-t">
+                            <span>Merchant Total</span>
+                            <span className="text-blue-600">{pricingService.formatXLM(pricingBreakdown.totalMerchantCost)}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Consumer Costs */}
+                      <div className="space-y-2">
+                        <h5 className="text-xs font-semibold text-muted-foreground flex items-center">
+                          <Info className="w-3 h-3 mr-1" />
+                          What You Pay
+                        </h5>
+                        <div className="bg-background rounded p-2 space-y-1">
+                          <div className="flex justify-between text-xs">
+                            <span className="text-muted-foreground">Product Price</span>
+                            <span className="font-medium">{pricingService.formatXLM(pricingBreakdown.originalAmount)}</span>
+                          </div>
+                          <div className="flex justify-between text-xs">
+                            <span className="text-muted-foreground">Interest ({pricingService.formatPercent(pricingBreakdown.consumerInterestRate)} APR)</span>
+                            <span className="font-medium">{pricingService.formatXLM(pricingBreakdown.consumerInterestAmount)}</span>
+                          </div>
+                          <div className="flex justify-between text-xs font-semibold pt-1 border-t">
+                            <span>Your Total</span>
+                            <span className="text-green-600">{pricingService.formatXLM(pricingBreakdown.totalConsumerPayment)}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Blend Protocol Info */}
+                      <div className="bg-primary/5 rounded p-2 flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">
+                          Powered by Blend Protocol
+                        </span>
+                        <span className="font-medium">
+                          Pool: {pricingService.formatPercent(pricingBreakdown.blendPoolUtilization)} utilized
+                        </span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
 
                 {/* Next Steps */}
                 <Card className="bg-primary/5 border-primary/20">
