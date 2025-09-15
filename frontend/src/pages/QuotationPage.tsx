@@ -20,6 +20,7 @@ export function QuotationPage() {
   const [loading, setLoading] = useState(true);
   const [showPricingDetails, setShowPricingDetails] = useState(false);
   const [selectedPlanPricing, setSelectedPlanPricing] = useState<PricingBreakdown | null>(null);
+  const [maxInstallments, setMaxInstallments] = useState<number>(4);
 
   useEffect(() => {
     const fetchQuotation = async () => {
@@ -27,8 +28,19 @@ export function QuotationPage() {
 
       try {
         setLoading(true);
+        
+        // Simulate Blend Pool decision on max installments (2-4 randomly)
+        const poolMaxInstallments = Math.floor(Math.random() * 3) + 2; // Random between 2-4
+        setMaxInstallments(poolMaxInstallments);
+        
         const response = await apiService.getQuotation(state.product.price);
-        setQuotationOptions(response.options);
+        
+        // Filter options based on Blend Pool's max installments
+        const filteredOptions = response.options.filter(
+          option => option.installmentsCount <= poolMaxInstallments
+        );
+        
+        setQuotationOptions(filteredOptions);
       } catch (error) {
         console.error('Error fetching quotation:', error);
         actions.setError('Error fetching installment options');
@@ -149,6 +161,30 @@ export function QuotationPage() {
               {showPricingDetails ? "Hide" : "Show"} Fee Breakdown
             </Button>
           </div>
+
+          {/* Blend Pool Limit Indicator */}
+          <Card className="bg-gradient-to-r from-purple-500/5 to-blue-500/5 border-purple-500/20">
+            <CardContent className="pt-4 pb-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-purple-500/10 rounded-full flex items-center justify-center">
+                    <Zap className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">
+                      Blend Pool Credit Limit
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Based on current pool liquidity and risk assessment
+                    </p>
+                  </div>
+                </div>
+                <Badge variant="secondary" className="bg-purple-500/10 text-purple-600 border-purple-500/20">
+                  Max {maxInstallments}x installments
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
 
           <div className="grid gap-4">
             {quotationOptions.map((option, index) => (

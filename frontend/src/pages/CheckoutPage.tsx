@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingCart, Star, Shield, Zap, CreditCard, ArrowRight, TrendingDown, RefreshCw } from 'lucide-react';
+import { ShoppingCart, Star, Shield, Zap, CreditCard, ArrowRight, TrendingDown, RefreshCw, Package, Camera, Cpu } from 'lucide-react';
 import { useBNPL } from '../hooks/useBNPL';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
 import Logo from '../components/Logo';
 import { DEMO_PRODUCT } from '../types';
 import pricingService, { BlendRate } from '../services/pricingService';
@@ -63,8 +64,8 @@ export function CheckoutPage() {
     },
     {
       icon: Star,
-      title: 'Zero Interest',
-      description: 'Split into up to 4 interest-free installments'
+      title: 'Competitive Rates',
+      description: 'Low APR powered by Blend Protocol DeFi pools'
     }
   ];
 
@@ -172,36 +173,92 @@ export function CheckoutPage() {
               </div>
             </div>
 
-            {/* Product Description */}
+            {/* Product Details Accordion */}
             <Card>
               <CardContent className="pt-6">
-                <div className="space-y-4">
-                  <p className="text-muted-foreground leading-relaxed">
-                    {product.description}
-                  </p>
-                  
-                  {/* Technical Specifications */}
-                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
-                    <div>
-                      <h4 className="font-semibold text-foreground mb-2">Specifications</h4>
-                      <ul className="space-y-1 text-sm text-muted-foreground">
-                        <li>• Display: 6.9" Dynamic AMOLED 2X</li>
-                        <li>• Storage: 256GB</li>
-                        <li>• RAM: 12GB</li>
-                        <li>• Connectivity: 5G</li>
-                      </ul>
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-foreground mb-2">Cameras</h4>
-                      <ul className="space-y-1 text-sm text-muted-foreground">
-                        <li>• Main: 200MP</li>
-                        <li>• Ultra-wide: 50MP</li>
-                        <li>• Telephoto: 10MP + 50MP</li>
-                        <li>• Front: 12MP</li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
+                <Accordion type="single" collapsible className="w-full">
+                  <AccordionItem value="description" className="border-b-0">
+                    <AccordionTrigger className="hover:no-underline">
+                      <div className="flex items-center space-x-2">
+                        <Package className="w-4 h-4" />
+                        <span>Product Description</span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <p className="text-muted-foreground leading-relaxed">
+                        {product.description}
+                      </p>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="specifications" className="border-b-0">
+                    <AccordionTrigger className="hover:no-underline">
+                      <div className="flex items-center space-x-2">
+                        <Cpu className="w-4 h-4" />
+                        <span>Technical Specifications</span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <h4 className="font-semibold text-foreground mb-2">Performance</h4>
+                          <ul className="space-y-1 text-sm text-muted-foreground">
+                            <li>• Display: 6.9" Dynamic AMOLED 2X</li>
+                            <li>• Storage: 256GB</li>
+                            <li>• RAM: 12GB</li>
+                            <li>• Connectivity: 5G</li>
+                            <li>• Processor: Snapdragon 8 Gen 3</li>
+                            <li>• Battery: 5000mAh</li>
+                          </ul>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-foreground mb-2">Features</h4>
+                          <ul className="space-y-1 text-sm text-muted-foreground">
+                            <li>• S Pen included</li>
+                            <li>• IP68 water resistance</li>
+                            <li>• Wireless charging</li>
+                            <li>• Samsung DeX support</li>
+                            <li>• Ultrasonic fingerprint</li>
+                            <li>• Titanium frame</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+
+                  <AccordionItem value="cameras" className="border-b-0">
+                    <AccordionTrigger className="hover:no-underline">
+                      <div className="flex items-center space-x-2">
+                        <Camera className="w-4 h-4" />
+                        <span>Camera System</span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <h4 className="font-semibold text-foreground mb-2">Rear Cameras</h4>
+                          <ul className="space-y-1 text-sm text-muted-foreground">
+                            <li>• Main: 200MP with OIS</li>
+                            <li>• Ultra-wide: 50MP (120°)</li>
+                            <li>• Telephoto 1: 10MP (3x optical)</li>
+                            <li>• Telephoto 2: 50MP (5x optical)</li>
+                            <li>• 100x Space Zoom</li>
+                          </ul>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-foreground mb-2">Video & Front</h4>
+                          <ul className="space-y-1 text-sm text-muted-foreground">
+                            <li>• Front: 12MP autofocus</li>
+                            <li>• 8K video recording</li>
+                            <li>• Super Steady video</li>
+                            <li>• Night mode (all lenses)</li>
+                            <li>• Expert RAW support</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               </CardContent>
             </Card>
 
