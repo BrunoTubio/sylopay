@@ -12,6 +12,7 @@ import Logo from '../components/Logo';
 import PricingCalculator from '../components/PricingCalculator';
 import apiService from '../services/api';
 import { PricingBreakdown } from '../services/pricingService';
+import pricingService, { BlendRate } from '../services/pricingService';
 
 export function QuotationPage() {
   const { state, actions } = useBNPL();
@@ -21,6 +22,7 @@ export function QuotationPage() {
   const [showPricingDetails, setShowPricingDetails] = useState(false);
   const [selectedPlanPricing, setSelectedPlanPricing] = useState<PricingBreakdown | null>(null);
   const [maxInstallments, setMaxInstallments] = useState<number>(4);
+  const [blendRate, setBlendRate] = useState<BlendRate | null>(null);
 
   useEffect(() => {
     const fetchQuotation = async () => {
@@ -32,6 +34,10 @@ export function QuotationPage() {
         // Simulate Blend Pool decision on max installments (2-4 randomly)
         const poolMaxInstallments = Math.floor(Math.random() * 3) + 2; // Random between 2-4
         setMaxInstallments(poolMaxInstallments);
+        
+        // Fetch Blend rates for realistic interest display
+        const blendRates = await pricingService.getBlendRates();
+        setBlendRate(blendRates);
         
         const response = await apiService.getQuotation(state.product.price);
         
@@ -242,9 +248,14 @@ export function QuotationPage() {
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Check className="w-4 h-4 text-primary" />
+                      <TrendingDown className="w-4 h-4 text-primary" />
                       <span className="text-sm font-medium text-primary">
-                        {option.interestRate === '0.0000' ? '0% interest' : `${option.interestRate}% rate`}
+                        {option.interestRate === '0.0000' 
+                          ? blendRate 
+                            ? `${blendRate.borrowRate.toFixed(1)}% APR via Blend`
+                            : 'Low APR via Blend'
+                          : `${option.interestRate}% APR`
+                        }
                       </span>
                     </div>
                   </div>
