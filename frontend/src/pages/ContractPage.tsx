@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, User, Mail, Phone, FileText, Check } from 'lucide-react';
 import { useBNPL } from '../hooks/useBNPL';
 import Button from '../components/Button';
@@ -7,6 +8,7 @@ import { Customer } from '../types';
 
 export function ContractPage() {
   const { state, actions } = useBNPL();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<Customer>(
     state.customer || {
       stellarPublicKey: 'GA57YQCS5NV4TXQPXR6DIKDYTQCMODQ3HNFKJZOULEE7M74SZ6RAIVLA',
@@ -29,6 +31,7 @@ export function ContractPage() {
     
     actions.setCustomer(formData);
     actions.nextStep(); // Go to processing
+    navigate('/processing');
   };
 
   const isFormValid = formData.fullName && formData.email && formData.stellarPublicKey && termsAccepted;

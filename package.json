@@ -15,10 +15,14 @@
     "clean": "docker-compose down -v && rm -rf backend/node_modules frontend/node_modules"
   },
   "dependencies": {
-    "@stellar/stellar-sdk": "^11.2.2"
+    "@stellar/stellar-sdk": "^11.3.0"
   },
-  "devDependencies": {},
-  "keywords": ["stellar", "bnpl", "blockchain", "hackathon"],
+  "keywords": [
+    "stellar",
+    "bnpl",
+    "blockchain",
+    "hackathon"
+  ],
   "author": "Hackathon Team",
   "license": "MIT"
 }

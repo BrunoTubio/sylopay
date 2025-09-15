@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CheckCircle, ExternalLink, AlertCircle } from 'lucide-react';
 import { useBNPL } from '../hooks/useBNPL';
 import Button from '../components/Button';
@@ -16,7 +17,9 @@ interface ProcessingStep {
 
 export function ProcessingPage() {
   const { state, actions } = useBNPL();
+  const navigate = useNavigate();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [processingStarted, setProcessingStarted] = useState(false);
   const [steps, setSteps] = useState<ProcessingStep[]>([
     {
       id: 'validation',
@@ -52,10 +55,14 @@ export function ProcessingPage() {
 
   useEffect(() => {
     const processContract = async () => {
+      if (processingStarted) return; // Prevent multiple executions
+      
       if (!state.customer || !state.selectedPlan || !state.product) {
         actions.setError('Dados incompletos para processar contrato');
         return;
       }
+
+      setProcessingStarted(true);
 
       try {
         // Step 1: Validation
@@ -106,6 +113,7 @@ export function ProcessingPage() {
         // Redirect to dashboard after a short delay
         setTimeout(() => {
           actions.nextStep();
+          navigate('/dashboard');
         }, 2000);
 
       } catch (error) {

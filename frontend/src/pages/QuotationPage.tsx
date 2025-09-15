@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check, Calendar, DollarSign } from 'lucide-react';
 import { useBNPL } from '../hooks/useBNPL';
 import { QuotationOption } from '../types';
@@ -9,6 +10,7 @@ import apiService from '../services/api';
 
 export function QuotationPage() {
   const { state, actions } = useBNPL();
+  const navigate = useNavigate();
   const [quotationOptions, setQuotationOptions] = useState<QuotationOption[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -34,6 +36,7 @@ export function QuotationPage() {
   const handlePlanSelect = (plan: QuotationOption) => {
     actions.setSelectedPlan(plan);
     actions.nextStep(); // Go to contract
+    navigate('/contract');
   };
 
   const formatAmount = (amount: string) => {

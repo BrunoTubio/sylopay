@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, Star, Shield, Zap } from 'lucide-react';
 import { useBNPL } from '../hooks/useBNPL';
 import Button from '../components/Button';
@@ -6,11 +7,13 @@ import { DEMO_PRODUCT } from '../types';
 
 export function CheckoutPage() {
   const { state, actions } = useBNPL();
+  const navigate = useNavigate();
   const product = state.product || DEMO_PRODUCT;
 
   const handleBNPLClick = () => {
     actions.setProduct(product);
-    actions.nextStep(); // Go to quotation
+    actions.setStep('quotation');
+    navigate('/quotation');
   };
 
   const features = [

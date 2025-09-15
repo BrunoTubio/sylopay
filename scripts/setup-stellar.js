@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const { StellarSdk } = require('@stellar/stellar-sdk');
+const StellarSdk = require('@stellar/stellar-sdk');
 const fs = require('fs');
 const path = require('path');
 
