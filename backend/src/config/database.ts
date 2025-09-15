@@ -1,4 +1,4 @@
-import { DataSource } from 'typeorm';
+import { DataSource, DataSourceOptions } from 'typeorm';
 import { config } from 'dotenv';
 
 // Load environment variables
@@ -7,7 +7,7 @@ config();
 export const AppDataSource = new DataSource({
   type: 'sqlite',
   database: process.env.NODE_ENV === 'development' ? ':memory:' : 'hackathon-bnpl.db',
-  synchronize: true,
+  synchronize: process.env.DB_SYNCHRONIZE === 'true',
   logging: process.env.NODE_ENV === 'development',
   entities: [__dirname + '/../entities/*.{ts,js}'],
   migrations: [__dirname + '/../migrations/*.{ts,js}'],
