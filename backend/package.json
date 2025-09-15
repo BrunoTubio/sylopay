@@ -1,0 +1,39 @@
+{
+  "name": "hackathon-bnpl-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Stellar BNPL Hackathon",
+  "main": "dist/app.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/app.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
+    "test": "jest",
+    "db:migrate": "typeorm migration:run -d src/config/database.ts"
+  },
+  "dependencies": {
+    "@stellar/stellar-sdk": "^11.2.2",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "dotenv": "^16.3.1",
+    "typeorm": "^0.3.17",
+    "pg": "^8.11.3",
+    "class-validator": "^0.14.0",
+    "class-transformer": "^0.5.1",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.8.7",
+    "@types/express": "^4.17.20",
+    "@types/cors": "^2.8.15",
+    "@types/pg": "^8.10.7",
+    "@types/uuid": "^9.0.6",
+    "typescript": "^5.2.2",
+    "ts-node-dev": "^2.0.0",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.7"
+  },
+  "keywords": ["stellar", "bnpl", "blockchain", "hackathon"],
+  "author": "Hackathon Team",
+  "license": "MIT"
+}

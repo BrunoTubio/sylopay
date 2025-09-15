@@ -1,0 +1,24 @@
+{
+  "name": "hackathon-bnpl",
+  "version": "1.0.0",
+  "description": "Stellar BNPL Platform for Hackathon",
+  "main": "index.js",
+  "scripts": {
+    "setup": "npm run setup:stellar && npm run setup:dependencies",
+    "setup:stellar": "node scripts/setup-stellar.js",
+    "setup:dependencies": "cd backend && npm install && cd ../frontend && npm install",
+    "dev": "docker-compose up -d && npm run dev:backend & npm run dev:frontend",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "cd backend && npm run build && cd ../frontend && npm run build",
+    "test": "cd backend && npm test && cd ../frontend && npm test",
+    "clean": "docker-compose down -v && rm -rf backend/node_modules frontend/node_modules"
+  },
+  "dependencies": {
+    "@stellar/stellar-sdk": "^11.2.2"
+  },
+  "devDependencies": {},
+  "keywords": ["stellar", "bnpl", "blockchain", "hackathon"],
+  "author": "Hackathon Team",
+  "license": "MIT"
+}
