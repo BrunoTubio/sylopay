@@ -79,7 +79,7 @@ export function QuotationPage() {
           <div className="flex items-center justify-between h-16">
             <Button
               variant="ghost"
-              onClick={actions.prevStep}
+              onClick={() => window.history.back()}
               className="flex items-center"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
