@@ -285,7 +285,7 @@ export function QuotationPage() {
         </div>
 
         {/* Pricing Details Section */}
-        {showPricingDetails && state.selectedPlan && (
+        {showPricingDetails && (
           <Card className="mt-6 border-blue-500/20 bg-gradient-to-r from-blue-500/5 to-primary/5">
             <CardHeader>
               <div className="flex items-center space-x-2">
@@ -297,11 +297,28 @@ export function QuotationPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <PricingCalculator
-                amount={parseFloat(state.product?.price || '0')}
-                installments={state.selectedPlan.installmentsCount}
-                onPricingUpdate={(pricing) => setSelectedPlanPricing(pricing)}
-              />
+              {state.selectedPlan ? (
+                <PricingCalculator
+                  amount={parseFloat(state.product?.price || '0')}
+                  installments={state.selectedPlan.installmentsCount}
+                  onPricingUpdate={(pricing) => setSelectedPlanPricing(pricing)}
+                />
+              ) : (
+                <Card className="border-dashed border-2 border-muted-foreground/20">
+                  <CardContent className="pt-6">
+                    <div className="text-center py-8">
+                      <Calculator className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-foreground mb-2">
+                        Select a Payment Plan
+                      </h3>
+                      <p className="text-muted-foreground">
+                        Choose one of the installment options above to see detailed fee breakdown, 
+                        competitive analysis, and savings compared to traditional BNPL providers.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </CardContent>
           </Card>
         )}
