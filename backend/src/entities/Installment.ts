@@ -13,31 +13,31 @@ export enum InstallmentStatus {
 @Unique(['contractId', 'installmentNumber'])
 export class Installment {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id?: string;
 
   @Column({ name: 'contract_id' })
-  contractId: string;
+  contractId?: string;
 
   @Column({ name: 'installment_number' })
-  installmentNumber: number;
+  installmentNumber?: number;
 
   @Column()
-  amount: string;
+  amount?: string;
 
   @Column({ name: 'due_date', type: 'date' })
-  dueDate: Date;
+  dueDate?: Date;
 
   @Column({ default: 'pending' })
-  status: string;
+  status?: string;
 
   @Column({ name: 'payment_tx_hash', length: 64, nullable: true })
   paymentTxHash?: string;
 
   @Column({ name: 'late_fee', default: '0.0000000' })
-  lateFee: string;
+  lateFee?: string;
 
   @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
+  createdAt?: Date;
 
   @Column({ name: 'paid_at', nullable: true })
   paidAt?: Date;
@@ -45,5 +45,5 @@ export class Installment {
   // Relations
   @ManyToOne(() => Contract, contract => contract.installments)
   @JoinColumn({ name: 'contract_id' })
-  contract: Contract;
+  contract?: Contract;
 }

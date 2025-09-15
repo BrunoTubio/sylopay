@@ -18,28 +18,28 @@ export enum TransactionStatus {
 @Entity('transactions')
 export class Transaction {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id?: string;
 
   @Column({ name: 'contract_id' })
-  contractId: string;
+  contractId?: string;
 
   @Column({ name: 'stellar_tx_hash', length: 64, unique: true, nullable: true })
   stellarTxHash?: string;
 
   @Column({ name: 'transaction_type' })
-  transactionType: string;
+  transactionType?: string;
 
   @Column({ default: 'pending' })
-  status: string;
+  status?: string;
 
   @Column()
-  amount: string;
+  amount?: string;
 
   @Column({ name: 'from_address', length: 56 })
-  fromAddress: string;
+  fromAddress?: string;
 
   @Column({ name: 'to_address', length: 56 })
-  toAddress: string;
+  toAddress?: string;
 
   @Column({ nullable: true })
   memo?: string;
@@ -51,7 +51,7 @@ export class Transaction {
   errorMessage?: string;
 
   @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
+  createdAt?: Date;
 
   @Column({ name: 'confirmed_at', nullable: true })
   confirmedAt?: Date;
@@ -59,5 +59,5 @@ export class Transaction {
   // Relations
   @ManyToOne(() => Contract, contract => contract.transactions)
   @JoinColumn({ name: 'contract_id' })
-  contract: Contract;
+  contract?: Contract;
 }

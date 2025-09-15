@@ -4,6 +4,9 @@ import helmet from 'helmet';
 import { config } from 'dotenv';
 import { initializeDatabase } from './config/database';
 import { StellarService } from './services/StellarService';
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
+import path from 'path';
 
 // Load environment variables
 config();
@@ -29,6 +32,8 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+const swaggerDocument = YAML.load(path.join(__dirname, '../openapi.yaml')); // Ajuste o caminho se necessário
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Health check endpoint
 app.get('/health', async (req, res) => {

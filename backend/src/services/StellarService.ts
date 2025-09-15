@@ -1,3 +1,5 @@
+import { Keypair } from "@stellar/stellar-sdk";
+
 const StellarSdk = require('@stellar/stellar-sdk');
 
 export interface StellarConfig {
@@ -61,7 +63,7 @@ export class StellarService {
   async getBalance(publicKey: string): Promise<string> {
     const account = await this.getAccount(publicKey);
     const nativeBalance = account.balances.find(
-      balance => balance.asset_type === 'native'
+      (      balance: { asset_type: string; }) => balance.asset_type === 'native'
     );
     return nativeBalance?.balance || '0';
   }

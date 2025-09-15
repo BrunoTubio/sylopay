@@ -14,61 +14,61 @@ export enum ContractStatus {
 @Entity('contracts')
 export class Contract {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id?: string;
 
   @Column({ name: 'customer_id' })
-  customerId: string;
+  customerId?: string;
 
   @Column({ name: 'merchant_name' })
-  merchantName: string;
+  merchantName?: string;
 
   @Column({ name: 'merchant_public_key', length: 56 })
-  merchantPublicKey: string;
+  merchantPublicKey?: string;
 
   @Column({ name: 'product_name' })
-  productName: string;
+  productName?: string;
 
   @Column({ name: 'total_amount' })
-  totalAmount: string;
+  totalAmount?: string;
 
   @Column({ name: 'installment_amount' })
-  installmentAmount: string;
+  installmentAmount?: string;
 
   @Column({ name: 'installments_count' })
-  installmentsCount: number;
+  installmentsCount?: number;
 
   @Column({ name: 'frequency_days', default: 30 })
-  frequencyDays: number;
+  frequencyDays?: number;
 
   @Column({ name: 'interest_rate', default: '0.0000' })
-  interestRate: string;
+  interestRate?: string;
 
   @Column({ default: 'pending' })
-  status: string;
+  status?: string;
 
   @Column({ name: 'stellar_contract_id', nullable: true, length: 64 })
   stellarContractId?: string;
 
   @Column({ type: 'text' })
-  terms: string;
+  terms?: string;
 
   @Column({ type: 'text', default: '{}' })
-  metadata: string;
+  metadata?: string;
 
   @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
+  createdAt?: Date;
 
   @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
+  updatedAt?: Date;
 
   // Relations
   @ManyToOne(() => Customer, customer => customer.contracts)
   @JoinColumn({ name: 'customer_id' })
-  customer: Customer;
+  customer?: Customer;
 
   @OneToMany(() => Transaction, transaction => transaction.contract)
-  transactions: Transaction[];
+  transactions?: Transaction[];
 
   @OneToMany(() => Installment, installment => installment.contract)
-  installments: Installment[];
+  installments?: Installment[];
 }

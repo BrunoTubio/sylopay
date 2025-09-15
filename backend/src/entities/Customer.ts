@@ -4,16 +4,16 @@ import { Contract } from './Contract';
 @Entity('customers')
 export class Customer {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id?: string;
 
   @Column({ name: 'stellar_public_key', length: 56, unique: true })
-  stellarPublicKey: string;
+  stellarPublicKey?: string;
 
   @Column({ unique: true })
-  email: string;
+  email?: string;
 
   @Column({ name: 'full_name' })
-  fullName: string;
+  fullName?: string;
 
   @Column({ nullable: true })
   phone?: string;
@@ -22,15 +22,15 @@ export class Customer {
   documentNumber?: string;
 
   @Column({ type: 'text', default: '{}' })
-  metadata: string;
+  metadata?: string;
 
   @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
+  createdAt?: Date;
 
   @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
+  updatedAt?: Date;
 
   // Relations
   @OneToMany(() => Contract, contract => contract.customer)
-  contracts: Contract[];
+  contracts?: Contract[];
 }
