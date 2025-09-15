@@ -54,12 +54,9 @@ export function CheckoutPage() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
               <Logo size="md" />
-              <h1 className="text-xl font-bold text-foreground">SyloPay Store</h1>
+              
             </div>
             <div className="flex items-center space-x-4">
-              <Badge variant="secondary" className="hidden sm:flex">
-                Demo Mode
-              </Badge>
               <Button variant="ghost" size="icon">
                 <ShoppingCart className="w-5 h-5" />
               </Button>
@@ -213,7 +210,7 @@ export function CheckoutPage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/90 to-accent opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="flex items-center relative z-10">
                   <Zap className="w-5 h-5 mr-3" />
-                  <span className="font-semibold">Pay with SyloPay BNPL</span>
+                  <span className="font-semibold">Pay with SyloPay</span>
                 </div>
                 <ArrowRight className="w-5 h-5 relative z-10" />
               </Button>
