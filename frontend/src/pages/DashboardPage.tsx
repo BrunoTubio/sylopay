@@ -129,7 +129,6 @@ export function DashboardPage() {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-3">
               <Logo size="md" />
-              <h1 className="text-xl font-bold text-foreground">SyloPay Dashboard</h1>
             </div>
             <div className="flex items-center space-x-4">
               <Badge variant="secondary" className="hidden sm:flex">
