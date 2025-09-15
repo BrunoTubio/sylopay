@@ -60,8 +60,16 @@ export function QuotationPage() {
 
   const handlePlanSelect = (plan: QuotationOption) => {
     actions.setSelectedPlan(plan);
-    actions.nextStep(); // Go to contract
-    navigate('/contract');
+    // Commented out automatic redirect to allow users to explore fee breakdown
+    // actions.nextStep(); // Go to contract
+    // navigate('/contract');
+  };
+
+  const handleContinue = () => {
+    if (state.selectedPlan) {
+      actions.nextStep(); // Go to contract
+      navigate('/contract');
+    }
   };
 
   const formatAmount = (amount: string) => {
@@ -328,7 +336,7 @@ export function QuotationPage() {
           <Button
             size="lg"
             disabled={!state.selectedPlan}
-            onClick={() => state.selectedPlan && handlePlanSelect(state.selectedPlan)}
+            onClick={handleContinue}
             className="w-full sm:w-auto px-8 h-12"
           >
             <span className="mr-2">Continue with Selected Plan</span>
