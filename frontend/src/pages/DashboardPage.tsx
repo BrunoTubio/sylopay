@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { ExternalLink, Calendar, DollarSign, CheckCircle, Clock, RefreshCw, Home, TrendingUp, Wallet, Activity, Star } from 'lucide-react';
+import { ExternalLink, Calendar, DollarSign, CheckCircle, Clock, RefreshCw, Home, TrendingUp, Wallet, Activity, Star, BarChart3, Target, Award } from 'lucide-react';
 import { useBNPL } from '../hooks/useBNPL';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Progress } from '../components/ui/progress';
 import Logo from '../components/Logo';
+import PricingCalculator from '../components/PricingCalculator';
 import apiService from '../services/api';
 import { StellarAccount } from '../types';
+import { PricingBreakdown } from '../services/pricingService';
 
 interface InstallmentSchedule {
   number: number;
@@ -22,6 +24,8 @@ export function DashboardPage() {
   const [accountInfo, setAccountInfo] = useState<StellarAccount | null>(null);
   const [installments, setInstallments] = useState<InstallmentSchedule[]>([]);
   const [loading, setLoading] = useState(true);
+  const [pricingBreakdown, setPricingBreakdown] = useState<PricingBreakdown | null>(null);
+  const [showMerchantAnalytics, setShowMerchantAnalytics] = useState(false);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -136,6 +140,15 @@ export function DashboardPage() {
                 Active Contract
               </Badge>
               <Button
+                variant={showMerchantAnalytics ? "default" : "outline"}
+                size="sm"
+                onClick={() => setShowMerchantAnalytics(!showMerchantAnalytics)}
+                className="flex items-center"
+              >
+                <BarChart3 className="w-4 h-4 mr-2" />
+                {showMerchantAnalytics ? "Customer View" : "Merchant Analytics"}
+              </Button>
+              <Button
                 variant="outline"
                 size="sm"
                 onClick={actions.resetFlow}
@@ -195,6 +208,60 @@ export function DashboardPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Merchant Analytics Section */}
+        {showMerchantAnalytics && (
+          <Card className="mb-8 border-blue-500/20 bg-gradient-to-r from-blue-500/5 to-primary/5">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center">
+                    <Target className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-xl">Merchant Revenue Analytics</CardTitle>
+                    <CardDescription>
+                      Real-time pricing intelligence powered by Blend Protocol
+                    </CardDescription>
+                  </div>
+                </div>
+                <Badge variant="secondary" className="bg-blue-500/10 text-blue-600 border-blue-500/20">
+                  <Award className="w-3 h-3 mr-1" />
+                  Premium Insights
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div className="text-center p-4 bg-background rounded-lg border">
+                  <div className="text-2xl font-bold text-green-600">
+                    {pricingBreakdown ? `$${(pricingBreakdown.savings.vsTradionalBNPL * 2.5).toFixed(0)}` : '$180'}
+                  </div>
+                  <div className="text-sm text-muted-foreground">Saved vs Traditional BNPL</div>
+                  <div className="text-xs text-green-600">Per transaction</div>
+                </div>
+                <div className="text-center p-4 bg-background rounded-lg border">
+                  <div className="text-2xl font-bold text-blue-600">3.5%</div>
+                  <div className="text-sm text-muted-foreground">Merchant Fee</div>
+                  <div className="text-xs text-blue-600">41% below market avg</div>
+                </div>
+                <div className="text-center p-4 bg-background rounded-lg border">
+                  <div className="text-2xl font-bold text-purple-600">Instant</div>
+                  <div className="text-sm text-muted-foreground">Settlement</div>
+                  <div className="text-xs text-purple-600">vs T+7 traditional</div>
+                </div>
+              </div>
+              
+              {state.selectedPlan && (
+                <PricingCalculator
+                  amount={parseFloat(state.selectedPlan.totalAmount)}
+                  installments={state.selectedPlan.installmentsCount}
+                  onPricingUpdate={(pricing) => setPricingBreakdown(pricing)}
+                />
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
