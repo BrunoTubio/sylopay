@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingCart, Star, Shield, Zap, CreditCard, ArrowRight } from 'lucide-react';
 import { useBNPL } from '../hooks/useBNPL';
@@ -12,6 +12,15 @@ export function CheckoutPage() {
   const { state, actions } = useBNPL();
   const navigate = useNavigate();
   const product = state.product || DEMO_PRODUCT;
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  const productImages = [
+    '/samsung-s25-ultra-main.jpg',
+    '/samsung-s25-ultra-front-back.jpg',
+    '/samsung-s25-ultra-details.jpg',
+    '/samsung-s25-ultra-angle1.jpg',
+    '/samsung-s25-ultra-angle2.jpg'
+  ];
 
   const handleBNPLClick = () => {
     actions.setProduct(product);
@@ -22,18 +31,18 @@ export function CheckoutPage() {
   const features = [
     {
       icon: Shield,
-      title: 'Seguro e Confiável',
-      description: 'Transações protegidas pela blockchain Stellar'
+      title: 'Safe & Reliable',
+      description: 'Transactions protected by Stellar blockchain'
     },
     {
       icon: Zap,
-      title: 'Aprovação Instantânea', 
-      description: 'Sem burocacia, aprovação em segundos'
+      title: 'Instant Approval', 
+      description: 'No paperwork, approval in seconds'
     },
     {
       icon: Star,
-      title: 'Zero Juros',
-      description: 'Parcele sem juros em até 4x'
+      title: 'Zero Interest',
+      description: 'Split into up to 4 interest-free installments'
     }
   ];
 
@@ -65,26 +74,41 @@ export function CheckoutPage() {
           <div className="space-y-6">
             {/* Main Product Image */}
             <Card className="overflow-hidden">
-              <div className="aspect-square bg-gradient-to-br from-primary/10 via-accent/5 to-primary/5 flex items-center justify-center relative">
-                <div className="absolute top-4 right-4">
+              <div className="aspect-square relative bg-gradient-to-br from-muted/20 to-muted/5">
+                <div className="absolute top-4 right-4 z-10">
                   <Badge variant="secondary">Trending</Badge>
                 </div>
-                <div className="text-center">
-                  <div className="w-32 h-32 bg-card rounded-2xl shadow-xl mx-auto mb-6 flex items-center justify-center border border-border/50">
-                    <span className="text-primary font-bold text-4xl">📱</span>
+                <img 
+                  src={productImages[selectedImageIndex]} 
+                  alt={product.name}
+                  className="w-full h-full object-contain p-8"
+                />
+                <div className="absolute bottom-4 left-4 right-4">
+                  <div className="bg-background/80 backdrop-blur-sm rounded-lg p-3">
+                    <p className="text-foreground font-medium text-sm">{product.name}</p>
+                    <p className="text-muted-foreground text-xs">Titanium Black - 256GB</p>
                   </div>
-                  <p className="text-muted-foreground font-medium">{product.name}</p>
                 </div>
               </div>
             </Card>
 
             {/* Thumbnail Gallery */}
-            <div className="grid grid-cols-4 gap-3">
-              {[1, 2, 3, 4].map((i) => (
-                <Card key={i} className="aspect-square overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all">
-                  <div className="w-full h-full bg-gradient-to-br from-muted/50 to-muted/20 flex items-center justify-center">
-                    <span className="text-muted-foreground text-xs font-medium">IMG {i}</span>
-                  </div>
+            <div className="grid grid-cols-5 gap-3">
+              {productImages.map((image, index) => (
+                <Card 
+                  key={index} 
+                  className={`aspect-square overflow-hidden cursor-pointer transition-all ${
+                    selectedImageIndex === index 
+                      ? 'ring-2 ring-primary border-primary' 
+                      : 'hover:ring-2 hover:ring-primary/20 border-border'
+                  }`}
+                  onClick={() => setSelectedImageIndex(index)}
+                >
+                  <img 
+                    src={image} 
+                    alt={`${product.name} - Image ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
                 </Card>
               ))}
             </div>
@@ -99,7 +123,7 @@ export function CheckoutPage() {
                   {product.name}
                 </h1>
                 <p className="text-lg text-muted-foreground mt-2">
-                  Premium smartphone with cutting-edge technology
+                  256GB, 12GB RAM, Quad Camera 200MP, 6.9" Display, Titanium Black
                 </p>
               </div>
 
@@ -111,7 +135,7 @@ export function CheckoutPage() {
                   <span className="text-xl font-medium text-primary">XLM</span>
                 </div>
                 <Badge variant="outline" className="text-muted-foreground">
-                  ≈ $25.00 USD
+                  ≈ $3,000 USD
                 </Badge>
               </div>
 
@@ -132,9 +156,33 @@ export function CheckoutPage() {
             {/* Product Description */}
             <Card>
               <CardContent className="pt-6">
-                <p className="text-muted-foreground leading-relaxed">
-                  {product.description}
-                </p>
+                <div className="space-y-4">
+                  <p className="text-muted-foreground leading-relaxed">
+                    {product.description}
+                  </p>
+                  
+                  {/* Technical Specifications */}
+                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
+                    <div>
+                      <h4 className="font-semibold text-foreground mb-2">Specifications</h4>
+                      <ul className="space-y-1 text-sm text-muted-foreground">
+                        <li>• Display: 6.9" Dynamic AMOLED 2X</li>
+                        <li>• Storage: 256GB</li>
+                        <li>• RAM: 12GB</li>
+                        <li>• Connectivity: 5G</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-foreground mb-2">Cameras</h4>
+                      <ul className="space-y-1 text-sm text-muted-foreground">
+                        <li>• Main: 200MP</li>
+                        <li>• Ultra-wide: 50MP</li>
+                        <li>• Telephoto: 10MP + 50MP</li>
+                        <li>• Front: 12MP</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
 

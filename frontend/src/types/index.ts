@@ -87,12 +87,12 @@ export interface AppState {
 
 // Demo Data
 export const DEMO_PRODUCT: Product = {
-  id: 'demo-product-1',
-  name: 'Smartphone Galaxy Pro',
-  description: 'Último modelo com tecnologia avançada, câmera profissional e bateria de longa duração.',
-  price: '100.0000000',
-  image: '/demo-phone.jpg',
-  category: 'Electronics'
+  id: 'samsung-galaxy-s25-ultra',
+  name: 'Samsung Galaxy S25 Ultra 5G',
+  description: 'Samsung Galaxy S25 Ultra 5G Smartphone, 256GB Storage, 12GB RAM, Quad Camera System 200+50+10+50MP, Large 6.9" Display, Titanium Black',
+  price: '1200.0000000',
+  image: '/samsung-s25-ultra-main.jpg',
+  category: 'Smartphones'
 };
 
 export const DEMO_MERCHANT = {

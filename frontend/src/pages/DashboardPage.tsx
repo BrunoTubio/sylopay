@@ -40,7 +40,7 @@ export function DashboardPage() {
 
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
-        actions.setError('Erro ao carregar dados do dashboard');
+        actions.setError('Error loading dashboard data');
       } finally {
         setLoading(false);
       }
@@ -94,13 +94,13 @@ export function DashboardPage() {
   const getStatusText = (status: InstallmentSchedule['status']) => {
     switch (status) {
       case 'paid':
-        return 'Pago';
+        return 'Paid';
       case 'due':
-        return 'Vencendo';
+        return 'Due';
       case 'overdue':
-        return 'Vencido';
+        return 'Overdue';
       default:
-        return 'Pendente';
+        return 'Pending';
     }
   };
 

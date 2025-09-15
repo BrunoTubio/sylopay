@@ -26,32 +26,32 @@ export function ProcessingPage() {
   const [steps, setSteps] = useState<ProcessingStep[]>([
     {
       id: 'validation',
-      title: 'Validando Dados',
-      description: 'Verificando informações do cliente e plano selecionado',
+      title: 'Validating Data',
+      description: 'Verifying customer information and selected plan',
       status: 'processing'
     },
     {
       id: 'stellar',
-      title: 'Conectando à Rede Stellar',
-      description: 'Estabelecendo conexão com a blockchain',
+      title: 'Connecting to Stellar Network',
+      description: 'Establishing blockchain connection',
       status: 'pending'
     },
     {
       id: 'contract',
-      title: 'Criando Smart Contract',
-      description: 'Implantando contrato inteligente na blockchain',
+      title: 'Creating Smart Contract',
+      description: 'Deploying smart contract on blockchain',
       status: 'pending'
     },
     {
       id: 'payment',
-      title: 'Processando Pagamento',
-      description: 'Transferindo fundos para o merchant',
+      title: 'Processing Payment',
+      description: 'Transferring funds to merchant',
       status: 'pending'
     },
     {
       id: 'completion',
-      title: 'Finalizando',
-      description: 'Configurando cronograma de parcelas',
+      title: 'Finalizing',
+      description: 'Setting up installment schedule',
       status: 'pending'
     }
   ]);
@@ -61,7 +61,7 @@ export function ProcessingPage() {
       if (processingStarted) return; // Prevent multiple executions
       
       if (!state.customer || !state.selectedPlan || !state.product) {
-        actions.setError('Dados incompletos para processar contrato');
+        actions.setError('Incomplete data to process contract');
         return;
       }
 
@@ -76,7 +76,7 @@ export function ProcessingPage() {
         await updateStep(1, 'processing');
         const stellarHealth = await apiService.getStellarHealth();
         if (!stellarHealth.connected) {
-          throw new Error('Falha na conexão com a rede Stellar');
+          throw new Error('Failed to connect to Stellar network');
         }
         await updateStep(1, 'completed');
         await apiService.delay(1000);
@@ -95,7 +95,7 @@ export function ProcessingPage() {
 
         const contractResponse = await apiService.createContract(contractData);
         if (!contractResponse.success) {
-          throw new Error('Falha na criação do contrato');
+          throw new Error('Failed to create contract');
         }
 
         actions.setContract(contractResponse.contract);
@@ -126,7 +126,7 @@ export function ProcessingPage() {
             ? { ...step, status: 'error' }
             : step
         ));
-        actions.setError(error instanceof Error ? error.message : 'Erro no processamento');
+        actions.setError(error instanceof Error ? error.message : 'Processing error');
       }
     };
 

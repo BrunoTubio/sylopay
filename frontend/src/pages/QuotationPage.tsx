@@ -27,7 +27,7 @@ export function QuotationPage() {
         setQuotationOptions(response.options);
       } catch (error) {
         console.error('Error fetching quotation:', error);
-        actions.setError('Erro ao buscar opções de parcelamento');
+        actions.setError('Error fetching installment options');
       } finally {
         setLoading(false);
       }
