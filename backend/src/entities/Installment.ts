@@ -21,29 +21,19 @@ export class Installment {
   @Column({ name: 'installment_number' })
   installmentNumber: number;
 
-  @Column({ type: 'decimal', precision: 20, scale: 7 })
+  @Column()
   amount: string;
 
   @Column({ name: 'due_date', type: 'date' })
   dueDate: Date;
 
-  @Column({ 
-    type: 'enum', 
-    enum: InstallmentStatus, 
-    default: InstallmentStatus.PENDING 
-  })
-  status: InstallmentStatus;
+  @Column({ default: 'pending' })
+  status: string;
 
   @Column({ name: 'payment_tx_hash', length: 64, nullable: true })
   paymentTxHash?: string;
 
-  @Column({ 
-    type: 'decimal', 
-    precision: 20, 
-    scale: 7, 
-    name: 'late_fee', 
-    default: '0.0000000' 
-  })
+  @Column({ name: 'late_fee', default: '0.0000000' })
   lateFee: string;
 
   @CreateDateColumn({ name: 'created_at' })

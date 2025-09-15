@@ -28,10 +28,10 @@ export class Contract {
   @Column({ name: 'product_name' })
   productName: string;
 
-  @Column({ type: 'decimal', precision: 20, scale: 7, name: 'total_amount' })
+  @Column({ name: 'total_amount' })
   totalAmount: string;
 
-  @Column({ type: 'decimal', precision: 20, scale: 7, name: 'installment_amount' })
+  @Column({ name: 'installment_amount' })
   installmentAmount: string;
 
   @Column({ name: 'installments_count' })
@@ -40,24 +40,20 @@ export class Contract {
   @Column({ name: 'frequency_days', default: 30 })
   frequencyDays: number;
 
-  @Column({ type: 'decimal', precision: 5, scale: 4, name: 'interest_rate', default: '0.0000' })
+  @Column({ name: 'interest_rate', default: '0.0000' })
   interestRate: string;
 
-  @Column({ 
-    type: 'enum', 
-    enum: ContractStatus, 
-    default: ContractStatus.PENDING 
-  })
-  status: ContractStatus;
+  @Column({ default: 'pending' })
+  status: string;
 
   @Column({ name: 'stellar_contract_id', nullable: true, length: 64 })
   stellarContractId?: string;
 
-  @Column({ type: 'jsonb' })
-  terms: Record<string, any>;
+  @Column({ type: 'text' })
+  terms: string;
 
-  @Column({ type: 'jsonb', default: {} })
-  metadata: Record<string, any>;
+  @Column({ type: 'text', default: '{}' })
+  metadata: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

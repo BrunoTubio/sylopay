@@ -5,9 +5,9 @@ import { config } from 'dotenv';
 config();
 
 export const AppDataSource = new DataSource({
-  type: 'postgres',
-  url: process.env.DATABASE_URL || 'postgresql://bnpl_user:bnpl_password@localhost:5432/bnpl_hackathon',
-  synchronize: process.env.NODE_ENV === 'development',
+  type: 'sqlite',
+  database: process.env.NODE_ENV === 'development' ? ':memory:' : 'hackathon-bnpl.db',
+  synchronize: true,
   logging: process.env.NODE_ENV === 'development',
   entities: [__dirname + '/../entities/*.{ts,js}'],
   migrations: [__dirname + '/../migrations/*.{ts,js}'],

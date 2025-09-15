@@ -26,21 +26,13 @@ export class Transaction {
   @Column({ name: 'stellar_tx_hash', length: 64, unique: true, nullable: true })
   stellarTxHash?: string;
 
-  @Column({ 
-    type: 'enum', 
-    enum: TransactionType, 
-    name: 'transaction_type' 
-  })
-  transactionType: TransactionType;
+  @Column({ name: 'transaction_type' })
+  transactionType: string;
 
-  @Column({ 
-    type: 'enum', 
-    enum: TransactionStatus, 
-    default: TransactionStatus.PENDING 
-  })
-  status: TransactionStatus;
+  @Column({ default: 'pending' })
+  status: string;
 
-  @Column({ type: 'decimal', precision: 20, scale: 7 })
+  @Column()
   amount: string;
 
   @Column({ name: 'from_address', length: 56 })
@@ -52,8 +44,8 @@ export class Transaction {
   @Column({ nullable: true })
   memo?: string;
 
-  @Column({ type: 'jsonb', nullable: true, name: 'stellar_result' })
-  stellarResult?: Record<string, any>;
+  @Column({ type: 'text', nullable: true, name: 'stellar_result' })
+  stellarResult?: string;
 
   @Column({ name: 'error_message', nullable: true })
   errorMessage?: string;

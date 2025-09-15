@@ -1,14 +1,4 @@
-import { 
-  Server, 
-  Keypair, 
-  Account, 
-  TransactionBuilder, 
-  Operation,
-  Asset,
-  Networks,
-  BASE_FEE,
-  TimeoutInfinite
-} from '@stellar/stellar-sdk';
+const StellarSdk = require('@stellar/stellar-sdk');
 
 export interface StellarConfig {
   horizonUrl: string;
@@ -32,20 +22,20 @@ export interface ContractData {
 }
 
 export class StellarService {
-  private server: Server;
+  private server: any;
   private networkPassphrase: string;
 
   constructor(config: StellarConfig) {
-    this.server = new Server(config.horizonUrl);
+    this.server = new StellarSdk.Horizon.Server(config.horizonUrl);
     this.networkPassphrase = config.network === 'TESTNET' 
-      ? Networks.TESTNET 
-      : Networks.PUBLIC;
+      ? StellarSdk.Networks.TESTNET 
+      : StellarSdk.Networks.PUBLIC;
   }
 
   /**
    * Get account information from Stellar network
    */
-  async getAccount(publicKey: string): Promise<Account> {
+  async getAccount(publicKey: string): Promise<any> {
     try {
       return await this.server.loadAccount(publicKey);
     } catch (error) {
@@ -83,11 +73,11 @@ export class StellarService {
     publicKey: string;
     secretKey: string;
   }> {
-    if (this.networkPassphrase !== Networks.TESTNET) {
+    if (this.networkPassphrase !== StellarSdk.Networks.TESTNET) {
       throw new Error('Account creation only available on Testnet');
     }
 
-    const keypair = Keypair.random();
+    const keypair = StellarSdk.Keypair.random();
     
     try {
       // Fund account using Friendbot
@@ -121,17 +111,16 @@ export class StellarService {
   }> {
     const sourceAccount = await this.getAccount(paymentData.fromKeypair.publicKey());
     
-    const transaction = new TransactionBuilder(sourceAccount, {
-      fee: BASE_FEE,
-      networkPassphrase: this.networkPassphrase,
-      timebounds: await this.server.fetchTimebounds(100)
+    const transaction = new StellarSdk.TransactionBuilder(sourceAccount, {
+      fee: StellarSdk.BASE_FEE,
+      networkPassphrase: this.networkPassphrase
     })
-      .addOperation(Operation.payment({
+      .addOperation(StellarSdk.Operation.payment({
         destination: paymentData.toPublicKey,
-        asset: Asset.native(),
+        asset: StellarSdk.Asset.native(),
         amount: paymentData.amount,
       }))
-      .setTimeout(TimeoutInfinite);
+      .setTimeout(300);
 
     // Add memo if provided
     if (paymentData.memo) {
@@ -165,7 +154,7 @@ export class StellarService {
     const contractId = `BNPL_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
     // Use merchant account to store contract data
-    const merchantKeypair = Keypair.fromPublicKey(contractData.merchantPublicKey);
+    const merchantKeypair = StellarSdk.Keypair.fromPublicKey(contractData.merchantPublicKey);
     const sourceAccount = await this.getAccount(contractData.merchantPublicKey);
     
     const contractInfo = JSON.stringify({
@@ -180,16 +169,15 @@ export class StellarService {
     // Split contract info if too long (64 byte limit per manageData)
     const dataKey = `contract_${contractId.slice(-8)}`;
     
-    const transaction = new TransactionBuilder(sourceAccount, {
-      fee: BASE_FEE,
-      networkPassphrase: this.networkPassphrase,
-      timebounds: await this.server.fetchTimebounds(100)
+    const transaction = new StellarSdk.TransactionBuilder(sourceAccount, {
+      fee: StellarSdk.BASE_FEE,
+      networkPassphrase: this.networkPassphrase
     })
-      .addOperation(Operation.manageData({
+      .addOperation(StellarSdk.Operation.manageData({
         name: dataKey,
         value: contractInfo.slice(0, 64) // Store first 64 chars
       }))
-      .setTimeout(TimeoutInfinite)
+      .setTimeout(300) // 5 minute timeout
       .build();
 
     // Note: In real implementation, merchant would sign this

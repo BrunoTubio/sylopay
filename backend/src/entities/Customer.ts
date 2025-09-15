@@ -21,8 +21,8 @@ export class Customer {
   @Column({ name: 'document_number', nullable: true })
   documentNumber?: string;
 
-  @Column({ type: 'jsonb', default: {} })
-  metadata: Record<string, any>;
+  @Column({ type: 'text', default: '{}' })
+  metadata: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
