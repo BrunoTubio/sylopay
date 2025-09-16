@@ -14,7 +14,7 @@ interface LegalModalProps {
   title: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  children: React.ReactNode; // Para receber o conteúdo
+  children: React.ReactNode; 
 }
 
 export function LegalModal({ title, open, onOpenChange, children }: LegalModalProps) {
@@ -28,7 +28,6 @@ export function LegalModal({ title, open, onOpenChange, children }: LegalModalPr
           </DialogDescription>
         </DialogHeader>
 
-        {/* Área de conteúdo rolável que renderiza o componente filho */}
         <div className="flex-grow overflow-y-auto pr-6 prose dark:prose-invert">
           {children}
         </div>
