@@ -74,7 +74,7 @@ export function QuotationPage() {
         console.log('🔄 API unavailable, using mock data for demo');
         
         // Fallback to mock data when API is unavailable
-        const mockOptions = generateMockQuotation(state.product.price, poolMaxInstallments);
+        const mockOptions = generateMockQuotation(state.product.price, maxInstallments);
         setQuotationOptions(mockOptions);
         setUsingMockData(true);
       } finally {
