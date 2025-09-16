@@ -4,7 +4,7 @@ import { config } from 'dotenv';
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 import path from 'path';
-import { Keypair, Server, Networks, TransactionBuilder, Operation, Asset, Memo } from '@stellar/stellar-sdk';
+import * as StellarSdk from '@stellar/stellar-sdk';
 
 config();
 
@@ -12,16 +12,16 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 // Stellar configuration
-const stellarServer = new Server('https://horizon-testnet.stellar.org');
-const STELLAR_NETWORK = Networks.TESTNET;
+const stellarServer = new StellarSdk.Server('https://horizon-testnet.stellar.org');
+const STELLAR_NETWORK = StellarSdk.Networks.TESTNET;
 
 // Pre-funded merchant account for demo (in production, would be secure)
 const MERCHANT_SECRET = 'SCZANGBA5YHTNYVWV4C3U252E2B6P6F5T3U6MM63WBSBZATAQI3EBTQ4';
 const MERCHANT_KEYPAIR = (() => {
   try {
-    return Keypair.fromSecret(MERCHANT_SECRET);
+    return StellarSdk.Keypair.fromSecret(MERCHANT_SECRET);
   } catch {
-    return Keypair.random(); // Fallback if invalid
+    return StellarSdk.Keypair.random(); // Fallback if invalid
   }
 })();
 
@@ -79,7 +79,7 @@ app.use(express.json());
 
 // Real Stellar account creation
 async function createRealStellarAccount(): Promise<{publicKey: string, secretKey: string}> {
-  const keypair = Keypair.random();
+  const keypair = StellarSdk.Keypair.random();
 
   try {
     // Fund account using Friendbot (testnet only)
@@ -331,16 +331,16 @@ app.post('/api/contract', async (req: express.Request, res: express.Response) =>
     try {
       const sourceAccount = await stellarServer.loadAccount(MERCHANT_KEYPAIR.publicKey());
 
-      const transaction = new TransactionBuilder(sourceAccount, {
+      const transaction = new StellarSdk.TransactionBuilder(sourceAccount, {
         fee: '100',
         networkPassphrase: STELLAR_NETWORK
       })
-      .addOperation(Operation.payment({
+      .addOperation(StellarSdk.Operation.payment({
         destination: customerPublicKey || (await createRealStellarAccount()).publicKey,
         amount: totalAmount,
-        asset: Asset.native()
+        asset: StellarSdk.Asset.native()
       }))
-      .addMemo(Memo.text(`BNPL-${contractId}`))
+      .addMemo(StellarSdk.Memo.text(`BNPL-${contractId}`))
       .setTimeout(180)
       .build();
 
@@ -491,19 +491,19 @@ app.post('/api/stellar/process-payment', async (req: express.Request, res: expre
     }
 
     // Create real payment transaction
-    const customerKeypair = Keypair.fromSecret(customerSecretKey);
+    const customerKeypair = StellarSdk.Keypair.fromSecret(customerSecretKey);
     const sourceAccount = await stellarServer.loadAccount(customerKeypair.publicKey());
 
-    const transaction = new TransactionBuilder(sourceAccount, {
+    const transaction = new StellarSdk.TransactionBuilder(sourceAccount, {
       fee: '100',
       networkPassphrase: STELLAR_NETWORK
     })
-    .addOperation(Operation.payment({
+    .addOperation(StellarSdk.Operation.payment({
       destination: MERCHANT_KEYPAIR.publicKey(),
       amount: installment.amount,
-      asset: Asset.native()
+      asset: StellarSdk.Asset.native()
     }))
-    .addMemo(Memo.text(`BNPL-${contractId}-P${installmentNumber}`))
+    .addMemo(StellarSdk.Memo.text(`BNPL-${contractId}-P${installmentNumber}`))
     .setTimeout(180)
     .build();
 
