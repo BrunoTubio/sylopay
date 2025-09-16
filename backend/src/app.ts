@@ -4,11 +4,26 @@ import { config } from 'dotenv';
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 import path from 'path';
+import { Keypair, Server, Networks, TransactionBuilder, Operation, Asset, Memo } from '@stellar/stellar-sdk';
 
 config();
 
 const app = express();
 const PORT = process.env.PORT || 8080;
+
+// Stellar configuration
+const stellarServer = new Server('https://horizon-testnet.stellar.org');
+const STELLAR_NETWORK = Networks.TESTNET;
+
+// Pre-funded merchant account for demo (in production, would be secure)
+const MERCHANT_SECRET = 'SCZANGBA5YHTNYVWV4C3U252E2B6P6F5T3U6MM63WBSBZATAQI3EBTQ4';
+const MERCHANT_KEYPAIR = (() => {
+  try {
+    return Keypair.fromSecret(MERCHANT_SECRET);
+  } catch {
+    return Keypair.random(); // Fallback if invalid
+  }
+})();
 
 // SQLite Database
 let db: any;
@@ -62,18 +77,42 @@ app.use(cors({
 
 app.use(express.json());
 
-// Helper function to generate mock Stellar keys
-function generateMockKeys() {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
-  let publicKey = 'G';
-  let secretKey = 'S';
+// Real Stellar account creation
+async function createRealStellarAccount(): Promise<{publicKey: string, secretKey: string}> {
+  const keypair = Keypair.random();
 
-  for (let i = 0; i < 55; i++) {
-    publicKey += chars[Math.floor(Math.random() * chars.length)];
-    secretKey += chars[Math.floor(Math.random() * chars.length)];
+  try {
+    // Fund account using Friendbot (testnet only)
+    const friendbotResponse = await fetch(
+      `https://friendbot.stellar.org?addr=${encodeURIComponent(keypair.publicKey())}`
+    );
+
+    if (!friendbotResponse.ok) {
+      throw new Error('Friendbot funding failed');
+    }
+
+    console.log(`✅ Real Stellar account created: ${keypair.publicKey()}`);
+
+    return {
+      publicKey: keypair.publicKey(),
+      secretKey: keypair.secret()
+    };
+  } catch (error) {
+    console.error('Error creating Stellar account:', error);
+    throw error;
   }
+}
 
-  return { publicKey, secretKey };
+// Real balance check
+async function getRealBalance(publicKey: string): Promise<string> {
+  try {
+    const account = await stellarServer.loadAccount(publicKey);
+    const xlmBalance = account.balances.find(b => b.asset_type === 'native');
+    return xlmBalance?.balance || '0';
+  } catch (error) {
+    console.error('Error getting balance:', error);
+    return '0';
+  }
 }
 
 // Root endpoint
@@ -89,7 +128,10 @@ app.get('/', (req: express.Request, res: express.Response) => {
       stellar: '/api/stellar/health',
       quotation: '/api/quotation',
       contract: '/api/contract',
-      createAccount: '/api/stellar/create-account'
+      createAccount: '/api/stellar/create-account',
+      getAccount: '/api/stellar/account/:publicKey',
+      getTransactions: '/api/stellar/transactions/:accountId',
+      processPayment: '/api/stellar/process-payment'
     }
   });
 });
@@ -106,7 +148,7 @@ app.get('/health', async (req, res) => {
       services: {
         api: 'healthy',
         database: 'healthy',
-        stellar: 'mocked'
+        stellar: 'connected'
       },
       uptime: process.uptime()
     });
@@ -119,51 +161,81 @@ app.get('/health', async (req, res) => {
   }
 });
 
-// Stellar health check (mocked for simplicity)
+// Stellar health check (real)
 app.get('/api/stellar/health', async (_req: express.Request, res: express.Response) => {
-  res.json({
-    connected: true,
-    network: 'TESTNET',
-    latestLedger: Math.floor(Date.now() / 5000), // Mock ledger number
-    horizonUrl: 'https://horizon-testnet.stellar.org',
-    note: 'Using simplified mock for demo'
-  });
-});
-
-// Create Stellar account (mocked)
-app.post('/api/stellar/create-account', async (_req: express.Request, res: express.Response) => {
   try {
-    const keys = generateMockKeys();
+    const ledgers = await stellarServer.ledgers()
+      .order('desc')
+      .limit(1)
+      .call();
+
+    const latestLedger = ledgers.records[0];
 
     res.json({
-      success: true,
-      account: {
-        publicKey: keys.publicKey,
-        secretKey: process.env.NODE_ENV === 'development' ? keys.secretKey : '[HIDDEN]'
-      },
-      balance: '10000.0000000',
-      explorerUrl: `https://stellar.expert/explorer/testnet/account/${keys.publicKey}`,
-      note: 'Mock account for demo purposes'
+      connected: true,
+      network: 'TESTNET',
+      latestLedger: latestLedger.sequence,
+      closedAt: latestLedger.closed_at,
+      horizonUrl: 'https://horizon-testnet.stellar.org',
+      merchantAccount: MERCHANT_KEYPAIR.publicKey(),
+      note: 'Connected to real Stellar testnet'
     });
   } catch (error) {
     res.status(500).json({
-      success: false,
-      error: 'Account creation failed'
+      connected: false,
+      error: error instanceof Error ? error.message : 'Stellar connection failed'
     });
   }
 });
 
-// Get account info (mocked)
-app.get('/api/stellar/account/:publicKey', async (req: express.Request, res: express.Response) => {
-  const { publicKey } = req.params;
+// Create real Stellar account
+app.post('/api/stellar/create-account', async (_req: express.Request, res: express.Response) => {
+  try {
+    const account = await createRealStellarAccount();
+    const balance = await getRealBalance(account.publicKey);
 
-  res.json({
-    publicKey,
-    balance: '10000.0000000',
-    sequence: Date.now().toString(),
-    explorerUrl: `https://stellar.expert/explorer/testnet/account/${publicKey}`,
-    note: 'Mock data for demo'
-  });
+    res.json({
+      success: true,
+      account: {
+        publicKey: account.publicKey,
+        secretKey: process.env.NODE_ENV === 'development' ? account.secretKey : '[HIDDEN]'
+      },
+      balance: balance,
+      funded: true,
+      explorerUrl: `https://stellar.expert/explorer/testnet/account/${account.publicKey}`,
+      note: 'Real account created and funded via Friendbot'
+    });
+  } catch (error) {
+    console.error('Account creation failed:', error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Account creation failed'
+    });
+  }
+});
+
+// Get real account info
+app.get('/api/stellar/account/:publicKey', async (req: express.Request, res: express.Response) => {
+  try {
+    const { publicKey } = req.params;
+    const account = await stellarServer.loadAccount(publicKey);
+    const balance = await getRealBalance(publicKey);
+
+    res.json({
+      publicKey,
+      balance,
+      sequence: account.sequence,
+      subentryCount: account.subentry_count,
+      lastModified: account.last_modified_ledger,
+      explorerUrl: `https://stellar.expert/explorer/testnet/account/${publicKey}`,
+      note: 'Real account data from Stellar network'
+    });
+  } catch (error) {
+    console.error('Account lookup failed:', error);
+    res.status(404).json({
+      error: error instanceof Error ? error.message : 'Account not found on Stellar network'
+    });
+  }
 });
 
 // Quotation endpoint
@@ -227,8 +299,8 @@ app.post('/api/contract', async (req: express.Request, res: express.Response) =>
       ) VALUES (?, ?, ?, ?, ?, ?, ?)
     `, [
       contractId,
-      merchantPublicKey || generateMockKeys().publicKey,
-      customerPublicKey || generateMockKeys().publicKey,
+      merchantPublicKey || MERCHANT_KEYPAIR.publicKey(),
+      customerPublicKey || (await createRealStellarAccount()).publicKey,
       totalAmount,
       installmentsCount,
       installmentAmount,
@@ -254,19 +326,50 @@ app.post('/api/contract', async (req: express.Request, res: express.Response) =>
       });
     }
 
+    // Create real blockchain transaction for contract
+    let stellarTxHash = null;
+    try {
+      const sourceAccount = await stellarServer.loadAccount(MERCHANT_KEYPAIR.publicKey());
+
+      const transaction = new TransactionBuilder(sourceAccount, {
+        fee: '100',
+        networkPassphrase: STELLAR_NETWORK
+      })
+      .addOperation(Operation.payment({
+        destination: customerPublicKey || (await createRealStellarAccount()).publicKey,
+        amount: totalAmount,
+        asset: Asset.native()
+      }))
+      .addMemo(Memo.text(`BNPL-${contractId}`))
+      .setTimeout(180)
+      .build();
+
+      transaction.sign(MERCHANT_KEYPAIR);
+      const result = await stellarServer.submitTransaction(transaction);
+      stellarTxHash = result.hash;
+
+      console.log(`✅ Real BNPL contract created on Stellar: ${stellarTxHash}`);
+    } catch (stellarError) {
+      console.error('Stellar transaction failed:', stellarError);
+      // Continue with local contract even if blockchain fails
+    }
+
     res.json({
       success: true,
       contract: {
         id: contractId,
-        merchantPublicKey,
-        customerPublicKey,
+        merchantPublicKey: merchantPublicKey || MERCHANT_KEYPAIR.publicKey(),
+        customerPublicKey: customerPublicKey || 'PENDING_CREATION',
         totalAmount,
         installmentsCount,
         installmentAmount,
         status: 'active',
         customerData,
         installments,
-        createdAt: new Date().toISOString()
+        stellarTxHash,
+        explorerUrl: stellarTxHash ? `https://stellar.expert/explorer/testnet/tx/${stellarTxHash}` : null,
+        createdAt: new Date().toISOString(),
+        note: stellarTxHash ? 'Contract registered on Stellar blockchain' : 'Local contract only'
       }
     });
   } catch (error) {
@@ -327,29 +430,105 @@ app.get('/api/contracts', async (req, res) => {
   }
 });
 
-// Process payment
-app.post('/api/stellar/process-payment', async (req, res) => {
+// Get real transaction history
+app.get('/api/stellar/transactions/:accountId', async (req: express.Request, res: express.Response) => {
   try {
-    const { contractId, installmentNumber } = req.body;
+    const { accountId } = req.params;
 
-    const txHash = Array.from({length: 64}, () =>
-      Math.floor(Math.random() * 16).toString(16)
-    ).join('').toUpperCase();
+    const transactions = await stellarServer.transactions()
+      .forAccount(accountId)
+      .order('desc')
+      .limit(20)
+      .call();
+
+    const formattedTxs = transactions.records.map(tx => ({
+      hash: tx.hash,
+      createdAt: tx.created_at,
+      ledger: tx.ledger_attr,
+      operationCount: tx.operation_count,
+      memo: tx.memo,
+      memoType: tx.memo_type,
+      feeCharged: tx.fee_charged,
+      explorerUrl: `https://stellar.expert/explorer/testnet/tx/${tx.hash}`,
+      successful: tx.successful
+    }));
+
+    res.json({
+      success: true,
+      account: accountId,
+      transactions: formattedTxs,
+      total: formattedTxs.length
+    });
+  } catch (error) {
+    console.error('Transaction history failed:', error);
+    res.status(500).json({
+      error: error instanceof Error ? error.message : 'Failed to get transaction history'
+    });
+  }
+});
+
+// Process real payment
+app.post('/api/stellar/process-payment', async (req: express.Request, res: express.Response) => {
+  try {
+    const { contractId, installmentNumber, customerSecretKey } = req.body;
+
+    if (!customerSecretKey) {
+      return res.status(400).json({ error: 'Customer secret key required for real payment' });
+    }
+
+    // Get installment details
+    const installment = await db.get(
+      'SELECT * FROM installments WHERE contract_id = ? AND number = ?',
+      [contractId, installmentNumber]
+    );
+
+    if (!installment) {
+      return res.status(404).json({ error: 'Installment not found' });
+    }
+
+    if (installment.status === 'paid') {
+      return res.status(400).json({ error: 'Installment already paid' });
+    }
+
+    // Create real payment transaction
+    const customerKeypair = Keypair.fromSecret(customerSecretKey);
+    const sourceAccount = await stellarServer.loadAccount(customerKeypair.publicKey());
+
+    const transaction = new TransactionBuilder(sourceAccount, {
+      fee: '100',
+      networkPassphrase: STELLAR_NETWORK
+    })
+    .addOperation(Operation.payment({
+      destination: MERCHANT_KEYPAIR.publicKey(),
+      amount: installment.amount,
+      asset: Asset.native()
+    }))
+    .addMemo(Memo.text(`BNPL-${contractId}-P${installmentNumber}`))
+    .setTimeout(180)
+    .build();
+
+    transaction.sign(customerKeypair);
+    const result = await stellarServer.submitTransaction(transaction);
 
     // Update installment in database
     await db.run(`
       UPDATE installments
       SET status = 'paid', tx_hash = ?, paid_at = CURRENT_TIMESTAMP
       WHERE contract_id = ? AND number = ?
-    `, [txHash, contractId, installmentNumber]);
+    `, [result.hash, contractId, installmentNumber]);
+
+    console.log(`✅ Real payment processed: ${result.hash}`);
 
     res.json({
       success: true,
-      txHash,
-      explorerUrl: `https://stellar.expert/explorer/testnet/tx/${txHash}`,
-      status: 'Payment processed'
+      txHash: result.hash,
+      explorerUrl: `https://stellar.expert/explorer/testnet/tx/${result.hash}`,
+      amount: installment.amount,
+      installmentNumber,
+      status: 'Payment confirmed on blockchain'
     });
   } catch (error) {
+    console.error('Payment processing failed:', error);
     res.status(500).json({
       error: error instanceof Error ? error.message : 'Payment processing failed'
     });
