@@ -77,7 +77,7 @@ function generateMockKeys() {
 }
 
 // Root endpoint
-app.get('/', (req: express.Request, res: express.Response) => {
+app.get('/', (req, res) => {
   res.json({
     name: 'SyloPay BNPL API',
     version: '1.0.0',
@@ -120,7 +120,7 @@ app.get('/health', async (req, res) => {
 });
 
 // Stellar health check (mocked for simplicity)
-app.get('/api/stellar/health', async (_req: express.Request, res: express.Response) => {
+app.get('/api/stellar/health', async (req, res) => {
   res.json({
     connected: true,
     network: 'TESTNET',
@@ -131,7 +131,7 @@ app.get('/api/stellar/health', async (_req: express.Request, res: express.Respon
 });
 
 // Create Stellar account (mocked)
-app.post('/api/stellar/create-account', async (_req: express.Request, res: express.Response) => {
+app.post('/api/stellar/create-account', async (req, res) => {
   try {
     const keys = generateMockKeys();
 
@@ -154,7 +154,7 @@ app.post('/api/stellar/create-account', async (_req: express.Request, res: expre
 });
 
 // Get account info (mocked)
-app.get('/api/stellar/account/:publicKey', async (req: express.Request, res: express.Response) => {
+app.get('/api/stellar/account/:publicKey', async (req, res) => {
   const { publicKey } = req.params;
 
   res.json({
@@ -167,7 +167,7 @@ app.get('/api/stellar/account/:publicKey', async (req: express.Request, res: exp
 });
 
 // Quotation endpoint
-app.post('/api/quotation', async (req: express.Request, res: express.Response) => {
+app.post('/api/quotation', async (req, res) => {
   try {
     const { amount, installments = 3 } = req.body;
 
@@ -202,7 +202,7 @@ app.post('/api/quotation', async (req: express.Request, res: express.Response) =
 });
 
 // Contract creation with SQLite persistence
-app.post('/api/contract', async (req: express.Request, res: express.Response) => {
+app.post('/api/contract', async (req, res) => {
   try {
     const {
       merchantPublicKey,
@@ -357,7 +357,7 @@ app.post('/api/stellar/process-payment', async (req, res) => {
 });
 
 // Error handling
-app.use((error: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+app.use((error: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Unhandled error:', error);
   res.status(500).json({
     error: 'Internal server error',
@@ -366,7 +366,7 @@ app.use((error: Error, _req: express.Request, res: express.Response, _next: expr
 });
 
 // 404 handler
-app.use('*', (req: express.Request, res: express.Response) => {
+app.use('*', (req, res) => {
   res.status(404).json({
     error: 'Endpoint not found',
     path: req.originalUrl,

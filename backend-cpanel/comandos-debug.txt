@@ -1,0 +1,56 @@
+# COMANDOS PARA EXECUTAR VIA SSH NO CPANEL
+
+# 1. Primeiro, entre no ambiente virtual:
+source /home/sylopay/nodevenv/demo.sylopay.com/api/22/bin/activate && cd /home/sylopay/demo.sylopay.com/api
+
+# 2. Verifique se os arquivos existem:
+ls -la
+ls -la dist/
+
+# 3. Veja o conteúdo do arquivo principal:
+head -50 dist/app.js
+
+# 4. Teste executar manualmente:
+node dist/app.js
+
+# 5. Se der erro, veja o erro completo:
+node dist/app.js 2>&1
+
+# 6. Verifique se as dependências estão instaladas:
+ls node_modules/ | head -10
+
+# 7. Se node_modules não existir ou estiver incompleto:
+npm install
+
+# 8. Se der erro de módulo não encontrado, instale especificamente:
+npm install express cors dotenv stellar-sdk
+
+# 9. Verifique o arquivo .env:
+cat .env
+
+# 10. Se .env não existir, crie:
+echo "NODE_ENV=production" > .env
+echo "PORT=3000" >> .env
+echo "STELLAR_HORIZON_URL=https://horizon-testnet.stellar.org" >> .env
+echo "STELLAR_NETWORK=TESTNET" >> .env
+
+# 11. Teste novamente:
+node dist/app.js
+
+# 12. Se funcionar, verifique se está ouvindo na porta:
+curl http://localhost:3000/health
+
+# 13. Para ver logs em tempo real:
+node dist/app.js 2>&1 | tee app.log
+
+# 14. Se tiver problema com TypeScript, compile localmente:
+npx tsc
+
+# 15. Verificar se tem algum processo Node rodando:
+ps aux | grep node
+
+# 16. Matar processos antigos se necessário:
+pkill -f "node.*app.js"
+
+# 17. Para debug mais detalhado:
+NODE_ENV=development node dist/app.js
