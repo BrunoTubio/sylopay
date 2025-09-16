@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Check, Calendar, DollarSign, CreditCard, Zap, ArrowRight, Calculator, TrendingDown } from 'lucide-react';
+import { ArrowLeft, Check, Calendar, DollarSign, CreditCard, Zap, ArrowRight, Calculator, TrendingDown, AlertCircle } from 'lucide-react';
 import { useBNPL } from '../hooks/useBNPL';
 import { QuotationOption } from '../types';
 import { Button } from '../components/ui/button';
@@ -14,6 +14,26 @@ import apiService from '../services/api';
 import { PricingBreakdown } from '../services/pricingService';
 import pricingService, { BlendRate } from '../services/pricingService';
 
+// Mock quotation generator for when API is unavailable
+function generateMockQuotation(amount: string, maxInstallments: number): QuotationOption[] {
+  const total = parseFloat(amount);
+  const options: QuotationOption[] = [];
+  
+  for (let installments = 2; installments <= maxInstallments; installments++) {
+    const installmentAmount = (total / installments).toFixed(7);
+    options.push({
+      installmentsCount: installments,
+      installmentAmount,
+      totalAmount: amount,
+      frequencyDays: 30,
+      interestRate: '2.5', // Mock interest rate
+      description: `${installments}x de ${parseFloat(installmentAmount).toFixed(2)} XLM`
+    });
+  }
+  
+  return options;
+}
+
 export function QuotationPage() {
   const { state, actions } = useBNPL();
   const navigate = useNavigate();
@@ -23,6 +43,7 @@ export function QuotationPage() {
   const [selectedPlanPricing, setSelectedPlanPricing] = useState<PricingBreakdown | null>(null);
   const [maxInstallments, setMaxInstallments] = useState<number>(4);
   const [blendRate, setBlendRate] = useState<BlendRate | null>(null);
+  const [usingMockData, setUsingMockData] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchQuotation = async () => {
@@ -47,9 +68,15 @@ export function QuotationPage() {
         );
         
         setQuotationOptions(filteredOptions);
+        setUsingMockData(false);
       } catch (error) {
         console.error('Error fetching quotation:', error);
-        actions.setError('Error fetching installment options');
+        console.log('🔄 API unavailable, using mock data for demo');
+        
+        // Fallback to mock data when API is unavailable
+        const mockOptions = generateMockQuotation(state.product.price, poolMaxInstallments);
+        setQuotationOptions(mockOptions);
+        setUsingMockData(true);
       } finally {
         setLoading(false);
       }
@@ -175,6 +202,27 @@ export function QuotationPage() {
               {showPricingDetails ? "Hide" : "Show"} Fee Breakdown
             </Button>
           </div>
+
+          {/* API Status Indicator */}
+          {usingMockData && (
+            <Card className="bg-gradient-to-r from-orange-500/5 to-yellow-500/5 border-orange-500/20">
+              <CardContent className="pt-4 pb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-orange-500/10 rounded-full flex items-center justify-center">
+                    <AlertCircle className="w-4 h-4 text-orange-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-orange-600">
+                      Demo Mode - API Unavailable
+                    </p>
+                    <p className="text-xs text-orange-600/80">
+                      Using mock data for demonstration. Rates are simulated.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Blend Pool Limit Indicator */}
           <Card className="bg-gradient-to-r from-purple-500/5 to-blue-500/5 border-purple-500/20">
