@@ -30,77 +30,85 @@ A modern BNPL (Buy Now, Pay Later) platform built on Stellar blockchain with ent
 ## **Technical Architecture**
 
 ### **Frontend Stack**
-```
+
 React 18 + TypeScript + Vite
-├── UI Framework: shadcn/ui + TailwindCSS
-├── State Management: React Context + Hooks
-├── Routing: React Router DOM
-├── Icons: Lucide React
-├── Animations: TailwindCSS + CSS transitions
-└── Build Tool: Vite with HMR
-```
+- UI Framework: shadcn/ui + TailwindCSS
+- State Management: React Context + Hooks
+- Routing: React Router DOM
+- Icons: Lucide React
+- Animations: TailwindCSS + CSS transitions
+- Build Tool: Vite with HMR
 
 ### **Backend Stack**
-```
+
 NestJS + TypeScript + PostgreSQL
-├── Database: TypeORM + PostgreSQL (Docker)
-├── Blockchain: Stellar SDK (Real testnet integration)
-├── Cache/Queue: Redis + RabbitMQ (Docker)
-├── API Docs: Swagger/OpenAPI
-├── Security: Rate limiting + Input validation
-├── Logging: Winston with structured logging
-├── Testing: Jest with 50%+ coverage
-└── Audit: Complete audit trail system
-```
+- Database: TypeORM + PostgreSQL (Docker)
+- Blockchain: Stellar SDK (Real testnet integration)
+- Cache/Queue: Redis + RabbitMQ (Docker)
+- API Docs: Swagger/OpenAPI
+- Security: Rate limiting + Input validation
+- Logging: Winston with structured logging
+- Testing: Jest with 50%+ coverage
+- Audit: Complete audit trail system
+
 
 ### **Infrastructure**
-```
+
 Docker Compose Stack
-├── PostgreSQL: Main database (persistent volumes)
-├── Redis: Caching and session storage
-├── RabbitMQ: Message queue for async processing
-└── All services with health checks and restart policies
-```
+- PostgreSQL: Main database (persistent volumes)
+- Redis: Caching and session storage
+- RabbitMQ: Message queue for async processing
+- All services with health checks and restart policies
+
 
 ## **Project Structure**
 
 ```
-hackathon-bnpl/
+sylopay/
 ├── frontend/                    # React + TypeScript Frontend
 │   ├── src/
 │   │   ├── components/         # Reusable UI components
-│   │   │   ├── ui/            # shadcn/ui components
-│   │   │   ├── Logo.tsx       # SyloPay logo component
-│   │   │   └── LoadingSpinner.tsx
+│   │   │   ├── ui/             # shadcn/ui components
+│   │   │   ├── Button.tsx     
+│   │   │   ├── LegalModel.tsx  
+│   │   │   └── LoadingSpinner.tsx   
+│   │   │   ├── Logo.tsx        # SyloPay logo component
+│   │   │   └── PricingCalculator.tsx
+│   │   │   └── ProgressBar.tsx
+│   │   │   └── WalletConnector.tsx
+│   │   ├── content/             
+│   │   │   └── LegalContent.tsx
+│   │   ├── hooks/             # React hooks for state management
+│   │   │   └── useBNPL.tsx
+│   │   ├── lib/             
+│   │   │   └── utils.ts
 │   │   ├── pages/             # 5 main application screens
 │   │   │   ├── CheckoutPage.tsx
 │   │   │   ├── QuotationPage.tsx
 │   │   │   ├── ContractPage.tsx
 │   │   │   ├── ProcessingPage.tsx
-│   │   │   └── DashboardPage.tsx
-│   │   ├── hooks/             # React hooks for state management
+│   │   │   └── DashboardPage.tsx            
 │   │   ├── services/          # API integration layer
-│   │   ├── types/             # TypeScript type definitions
 │   │   └── styles/            # Global CSS and theming
+│   │   ├── types/             # TypeScript type definitions
 │   ├── public/
 │   │   └── sylopay-logo.jpeg  # Brand logo
+│   │   └── samsung-s25-ultra-angle1.jpg  # Samsung s25 ultra
+│   │   └── samsung-s25-ultra-angle2.jpg  # Samsung s25 ultra
+│   │   └── samsung-s25-ultra-details.jpg  # Samsung s25 ultra
+│   │   └── samsung-s25-ultra-front-back.jpg  # Samsung s25 ultra
+│   │   └── samsung-s25-ultra-main.jpg  # Samsung s25 ultra
 │   ├── components.json        # shadcn/ui configuration
 │   └── tailwind.config.js     # Custom theme configuration
 ├── backend/                    # NestJS + TypeScript Backend
 │   ├── src/
-│   │   ├── modules/           # Feature modules
-│   │   │   ├── stellar/       # Stellar blockchain integration
-│   │   │   ├── contracts/     # BNPL contract logic
-│   │   │   ├── notifications/ # Multi-channel notifications
-│   │   │   └── audit/         # Security and compliance logging
+│   │   ├── config/            # Config Database
 │   │   ├── entities/          # Database entities (TypeORM)
 │   │   ├── services/          # Business logic layer
-│   │   ├── controllers/       # REST API endpoints
-│   │   └── utils/             # Utility functions
-│   ├── test/                  # Comprehensive test suite
-│   ├── logs/                  # Structured application logs
-│   └── docker-compose.yml     # Infrastructure services
-├── docs/                      # Technical documentation
+│   │   ├── app.ts          
+│   └── Dockerfile             # Docker
+├── scripts/                       
+│   └── setup-stellar.js       # stellar setup
 └── README.md                  # This file
 ```
 
