@@ -10,6 +10,7 @@ import PricingCalculator from '../components/PricingCalculator';
 import apiService from '../services/api';
 import { StellarAccount } from '../types';
 import { PricingBreakdown } from '../services/pricingService';
+import { useNavigate } from 'react-router-dom';
 
 interface InstallmentSchedule {
   number: number;
@@ -26,6 +27,11 @@ export function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [pricingBreakdown, setPricingBreakdown] = useState<PricingBreakdown | null>(null);
   const [showMerchantAnalytics, setShowMerchantAnalytics] = useState(false);
+  const navigate = useNavigate(); 
+
+  const handleNewPurchase = () => {
+    navigate('/');   // Navega para a página inicial
+  };
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -148,15 +154,15 @@ export function DashboardPage() {
                 <BarChart3 className="w-4 h-4 mr-2" />
                 {showMerchantAnalytics ? "Customer View" : "Merchant Analytics"}
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={actions.resetFlow}
-                className="flex items-center"
-              >
-                <Home className="w-4 h-4 mr-2" />
-                New Purchase
-              </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleNewPurchase}
+                  className="flex items-center"
+                >
+                  <Home className="w-4 h-4 mr-2" />
+                  New Purchase
+                </Button>
             </div>
           </div>
         </div>
