@@ -298,7 +298,7 @@ export function ContractPage() {
           </div>
 
           {/* Order Summary */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-1 flex items-start">
             <Card className="sticky top-8">
               <CardHeader>
                 <CardTitle className="flex items-center">
@@ -375,7 +375,7 @@ export function ContractPage() {
                           <Calculator className="w-4 h-4 mr-2" />
                           Complete Fee Transparency
                         </span>
-                        <Badge variant="secondary" className="bg-green-500/10 text-green-600 border-green-500/20">
+                        <Badge variant="secondary" className="bg-green-500/10 text-green-600 border-green-500/20 ">
                           <TrendingDown className="w-3 h-3 mr-1" />
                           {pricingBreakdown.savings.competitiveAdvantage}
                         </Badge>
