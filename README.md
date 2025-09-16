@@ -1,29 +1,33 @@
-# 🚀 SyloPay - Buy Now, Pay Later on Blockchain
+<div align= "center">
+<img src="sylopay-logo.jpeg" alt="Logo da Sylopay"/>
+</div>
+
+# SyloPay - Buy Now, Pay Later on Blockchain
 
 A modern BNPL (Buy Now, Pay Later) platform built on Stellar blockchain with enterprise-grade UI/UX, enabling instant merchant settlements and transparent installment plans.
 
-## ✨ Features Implemented
+## Features Implemented
 
-### 🎨 **Modern UI/UX (shadcn/ui)**
+### **Modern UI/UX (shadcn/ui)**
 - **Custom SyloPay Branding**: Dark theme with orange accent (#101010, #FF4317, #F4F3EF)
 - **Professional Components**: 25+ shadcn/ui components with custom styling
 - **Responsive Design**: Mobile-first approach with modern animations
 - **Brand Integration**: Logo implementation across all screens and loading states
 
-### 🏗️ **Complete BNPL Flow**
+### **Complete BNPL Flow**
 - **Checkout**: E-commerce product selection with BNPL option
 - **Quotation**: Interactive payment plan selection (2x, 3x, 4x installments)
 - **Contract**: Customer onboarding with form validation
 - **Processing**: Real-time blockchain transaction processing
 - **Dashboard**: Comprehensive payment tracking and account management
 
-### ⚡ **Real Blockchain Integration**
+### **Real Blockchain Integration**
 - **Stellar Network**: All transactions on Stellar Testnet (verifiable)
 - **Smart Contracts**: JavaScript-based contract logic via Stellar operations
 - **Account Management**: 5 funded Stellar accounts for testing
 - **Transaction Verification**: All operations viewable on Stellar Explorer
 
-## 🛠️ **Technical Architecture**
+## **Technical Architecture**
 
 ### **Frontend Stack**
 ```
@@ -58,7 +62,7 @@ Docker Compose Stack
 └── All services with health checks and restart policies
 ```
 
-## 📁 **Project Structure**
+## **Project Structure**
 
 ```
 hackathon-bnpl/
@@ -100,7 +104,7 @@ hackathon-bnpl/
 └── README.md                  # This file
 ```
 
-## 🚀 **Getting Started**
+## **Getting Started**
 
 ### **Prerequisites**
 - **Node.js**: 18+ LTS
@@ -206,7 +210,7 @@ docker-compose ps
 # Should show: postgresql, redis, rabbitmq (all healthy)
 ```
 
-## 🌐 **Demo Flow**
+## **Demo Flow**
 
 ### **Complete User Journey**
 1. **Start**: Visit http://localhost:3001
@@ -218,17 +222,8 @@ docker-compose ps
 7. **Dashboard**: View contract details and payment schedule
 8. **Verification**: Click Stellar Explorer links to verify on-chain
 
-### **Testing Accounts (Pre-funded)**
-```
-Master Account: GDVLDBAV4UDD4PJDQWFBHVQPORK7DNTFOL5KQB3PXZRMBIHK7TCF2RIE
-Customer 1: GC7VM6QMCWP2FI7RWVFC2OYYQU2LP7P2V6BFDE66KZ36GEX7L2RZRREN
-Customer 2: GADPLXWKHK7PBCFMJW72RCZJIJUQVHF5NLJHTLHM3GU5NDZWVJRR5ZZ4
-Customer 3: GA3RVDCGPN7HQCMJLHTWTMCR3U3RMPYMFRMPTZTYOXYIUSRHGAGM7G6S
-Customer 4: GBVYOHHGBDQEFCMVIBFTKDQJ4WECL5ZHDXWQW2WDYUXSM5M6NL5YWSF5
-```
-*Each account funded with 10,000 XLM on Stellar Testnet*
 
-## 🧪 **Testing & Quality**
+## **Testing & Quality**
 
 ### **Backend Tests**
 ```bash
@@ -266,7 +261,7 @@ POST /notifications
 GET /notifications/stats
 ```
 
-## 🔐 **Security Features**
+## **Security Features**
 
 - **Rate Limiting**: 3-tier protection (short/medium/long term)
 - **Input Validation**: Complete DTO validation with class-validator
@@ -275,7 +270,7 @@ GET /notifications/stats
 - **Environment-based Config**: No hardcoded secrets or URLs
 - **CORS Protection**: Configured for specific frontend origins
 
-## 📊 **Performance Metrics**
+## **Performance Metrics**
 
 - **Frontend Build**: < 3 seconds (Vite optimization)
 - **API Response Times**: < 200ms average
@@ -283,7 +278,7 @@ GET /notifications/stats
 - **Database Queries**: Optimized with proper indexing
 - **Memory Usage**: < 500MB total (all services)
 
-## 🎯 **Business Value**
+## **Business Value**
 
 ### **For Merchants**
 - ✅ **Instant Settlement**: Receive full payment immediately
@@ -303,7 +298,7 @@ GET /notifications/stats
 - ✅ **Scalable Design**: Microservices-ready infrastructure
 - ✅ **Audit Compliance**: Complete financial audit trail
 
-## 🚀 **Deployment Options**
+## **Deployment Options**
 
 ### **Development**
 ```bash
@@ -323,7 +318,7 @@ cd backend && npm run start:prod
 docker-compose -f docker-compose.prod.yml up -d
 ```
 
-## 🤝 **Contributing**
+## **Contributing**
 
 1. Fork the repository
 2. Create feature branch: `git checkout -b feature/amazing-feature`
@@ -331,20 +326,20 @@ docker-compose -f docker-compose.prod.yml up -d
 4. Push to branch: `git push origin feature/amazing-feature`
 5. Open Pull Request
 
-## 📞 **Support & Contact**
+## **Support & Contact**
 
 - **Repository**: https://github.com/Sylopay/sylopay
 - **Issues**: GitHub Issues for bug reports
 - **Documentation**: See `/docs` folder for detailed technical specs
 - **Demo**: Available for live presentations and hackathon judging
 
-## 📄 **License**
+## **License**
 
 MIT License - see [LICENSE](LICENSE) file for details.
 
 ---
 
-## 🏆 **Awards & Recognition**
+## **Awards & Recognition**
 
 **Built for hackathons showcasing:**
 - **Innovation**: First professional BNPL platform on Stellar
@@ -352,4 +347,4 @@ MIT License - see [LICENSE](LICENSE) file for details.
 - **User Experience**: Production-quality interface design
 - **Business Impact**: Solving real fintech problems with measurable value
 
-**🌟 SyloPay - Revolutionizing Buy Now, Pay Later with Blockchain Technology**
+**SyloPay - Revolutionizing Buy Now, Pay Later with Blockchain Technology**
