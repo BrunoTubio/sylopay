@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingCart, Star, Shield, Zap, CreditCard, ArrowRight, TrendingDown, RefreshCw, Package, Camera, Cpu } from 'lucide-react';
+import { Star, Shield, Zap, CreditCard, ArrowRight, TrendingDown, RefreshCw, Package, Camera, Cpu } from 'lucide-react';
 import { useBNPL } from '../hooks/useBNPL';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
@@ -83,11 +83,6 @@ export function CheckoutPage() {
             <div className="flex items-center space-x-3">
               <Logo size="md" />
               
-            </div>
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon">
-                <ShoppingCart className="w-5 h-5" />
-              </Button>
             </div>
           </div>
         </div>
