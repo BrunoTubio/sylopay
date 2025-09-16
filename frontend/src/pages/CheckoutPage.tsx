@@ -17,6 +17,7 @@ export function CheckoutPage() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [blendRate, setBlendRate] = useState<BlendRate | null>(null);
   const [loading, setLoading] = useState(false);
+  const [maxInstallments, setMaxInstallments] = useState<number>(4);
 
   const productImages = [
     '/samsung-s25-ultra-main.jpg',
@@ -30,6 +31,10 @@ export function CheckoutPage() {
     const fetchBlendRates = async () => {
       setLoading(true);
       try {
+        // Simulate Blend Pool decision on max installments (2-4 randomly)
+        const poolMaxInstallments = Math.floor(Math.random() * 3) + 2; // Random between 2-4
+        setMaxInstallments(poolMaxInstallments);
+        
         const rates = await pricingService.getBlendRates();
         setBlendRate(rates);
       } catch (error) {
@@ -295,7 +300,7 @@ export function CheckoutPage() {
               </Button>
 
               <div className="flex items-center justify-center space-x-4 text-sm text-muted-foreground">
-                <span>Split in up to 4x</span>
+                <span>Split in up to {maxInstallments}x</span>
                 <span>•</span>
                 <span className="flex items-center">
                   {loading ? (
