@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, ExternalLink, AlertCircle, Clock, Zap, Shield, CreditCard, ArrowRight } from 'lucide-react';
+import { CheckCircle, ExternalLink, AlertCircle, Clock, Zap, Shield, CreditCard, ArrowRight, TrendingDown } from 'lucide-react';
 import { useBNPL } from '../hooks/useBNPL';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
@@ -10,6 +10,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import Logo from '../components/Logo';
 import apiService from '../services/api';
 import { DEMO_MERCHANT } from '../types';
+import pricingService, { PricingBreakdown } from '../services/pricingService';
 
 interface ProcessingStep {
   id: string;
@@ -23,6 +24,7 @@ export function ProcessingPage() {
   const navigate = useNavigate();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [processingStarted, setProcessingStarted] = useState(false);
+  const [pricingBreakdown, setPricingBreakdown] = useState<PricingBreakdown | null>(null);
   const [steps, setSteps] = useState<ProcessingStep[]>([
     {
       id: 'validation',
@@ -55,6 +57,24 @@ export function ProcessingPage() {
       status: 'pending'
     }
   ]);
+
+  useEffect(() => {
+    const calculatePricing = async () => {
+      if (!state.product || !state.selectedPlan) return;
+      
+      try {
+        const pricing = await pricingService.calculateDynamicPricing(
+          parseFloat(state.product.price),
+          state.selectedPlan.installmentsCount
+        );
+        setPricingBreakdown(pricing);
+      } catch (error) {
+        console.error('Error calculating pricing:', error);
+      }
+    };
+
+    calculatePricing();
+  }, [state.product, state.selectedPlan]);
 
   useEffect(() => {
     const processContract = async () => {
@@ -378,15 +398,15 @@ export function ProcessingPage() {
                   <span className="font-medium">{state.product?.name}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Total Amount:</span>
+                  <span className="text-muted-foreground">Product Price:</span>
                   <span className="font-medium">
                     {state.product ? parseFloat(state.product.price).toFixed(2) : '0'} XLM
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Installments:</span>
+                  <span className="text-muted-foreground">Payment Plan:</span>
                   <span className="font-medium">
-                    {state.selectedPlan?.installmentsCount}x payments
+                    {state.selectedPlan?.installmentsCount}x installments
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
@@ -395,11 +415,27 @@ export function ProcessingPage() {
                     {state.selectedPlan ? parseFloat(state.selectedPlan.installmentAmount).toFixed(2) : '0'} XLM
                   </span>
                 </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Interest Rate:</span>
+                  <span className="font-medium text-primary">
+                    {pricingBreakdown 
+                      ? `${pricingBreakdown.consumerInterestRate.toFixed(1)}% APR via Blend`
+                      : state.selectedPlan
+                        ? 'Dynamic rate via Blend'
+                        : 'Loading...'
+                    }
+                  </span>
+                </div>
                 <div className="border-t pt-3">
                   <div className="flex justify-between font-semibold">
-                    <span>Final Total:</span>
+                    <span>Total You'll Pay:</span>
                     <span className="text-primary">
-                      {state.selectedPlan ? parseFloat(state.selectedPlan.totalAmount).toFixed(2) : '0'} XLM
+                      {pricingBreakdown 
+                        ? `${pricingBreakdown.totalConsumerPayment.toFixed(7)} XLM`
+                        : state.selectedPlan 
+                          ? `${parseFloat(state.selectedPlan.totalAmount).toFixed(2)} XLM`
+                          : '0 XLM'
+                      }
                     </span>
                   </div>
                 </div>

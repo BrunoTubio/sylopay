@@ -298,14 +298,24 @@ export function ContractPage() {
 
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Interest Rate:</span>
-                    <span className="font-medium text-primary">0% (Interest-free)</span>
+                    <span className="font-medium text-primary">
+                      {pricingBreakdown 
+                        ? `${pricingBreakdown.consumerInterestRate.toFixed(1)}% APR via Blend`
+                        : 'Loading...'
+                      }
+                    </span>
                   </div>
 
                   <div className="border-t pt-3">
                     <div className="flex justify-between font-semibold">
-                      <span>Total Amount:</span>
+                      <span>Total You'll Pay:</span>
                       <span className="text-primary">
-                        {state.selectedPlan ? parseFloat(state.selectedPlan.totalAmount).toFixed(2) : '0'} XLM
+                        {pricingBreakdown 
+                          ? `${pricingBreakdown.totalConsumerPayment.toFixed(7)} XLM`
+                          : state.selectedPlan 
+                            ? `${parseFloat(state.selectedPlan.totalAmount).toFixed(2)} XLM`
+                            : '0 XLM'
+                        }
                       </span>
                     </div>
                   </div>
