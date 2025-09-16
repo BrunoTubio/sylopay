@@ -11,6 +11,11 @@ import Logo from '../components/Logo';
 import { Customer } from '../types';
 import pricingService, { PricingBreakdown } from '../services/pricingService';
 
+
+import { LegalModal } from '../components/LegalModel';
+import { SyloPayPrivacyPolicyContent, TermsOfServiceContent} from '../content/LegalContent';
+
+
 export function ContractPage() {
   const { state, actions } = useBNPL();
   const navigate = useNavigate();
@@ -26,6 +31,7 @@ export function ContractPage() {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [pricingBreakdown, setPricingBreakdown] = useState<PricingBreakdown | null>(null);
   const [loadingPricing, setLoadingPricing] = useState(false);
+  const [activeModal, setActiveModal] = useState<'terms' | 'privacy' | null>(null);
 
   useEffect(() => {
     const calculatePricing = async () => {
@@ -211,13 +217,21 @@ export function ContractPage() {
                           </label>
                           <p className="text-muted-foreground">
                             By checking this box, you agree to our{' '}
-                            <a href="#" className="text-primary hover:underline">
+                            <button
+                              type="button"
+                              onClick={() => setActiveModal('terms')}
+                              className="text-primary hover:underline font-medium"
+                            >
                               Terms of Service
-                            </a>{' '}
-                            and{' '}
-                            <a href="#" className="text-primary hover:underline">
+                            </button>
+                            {' '}and{' '}
+                            <button
+                              type="button"
+                              onClick={() => setActiveModal('privacy')}
+                              className="text-primary hover:underline font-medium"
+                            >
                               Privacy Policy
-                            </a>
+                            </button>
                           </p>
                         </div>
                       </div>
@@ -402,8 +416,18 @@ export function ContractPage() {
               </CardContent>
             </Card>
           </div>
+          <LegalModal
+        open={activeModal !== null}
+        onOpenChange={() => setActiveModal(null)}
+        title={activeModal === 'terms' ? 'Terms of Service' : 'SyloPay Privacy Policy'}
+      >
+        {activeModal === 'terms' && <TermsOfServiceContent />}
+        {activeModal === 'privacy' && <SyloPayPrivacyPolicyContent />}
+      </LegalModal>
         </div>
+        
       </div>
+      
     </div>
   );
 }
