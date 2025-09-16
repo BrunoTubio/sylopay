@@ -32,6 +32,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 const swaggerDocument = YAML.load(path.join(__dirname, '../openapi.yaml')); // Ajuste o caminho se necessário
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
