@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Mail, Phone, FileText, Check, CreditCard, Shield, ArrowRight, Calculator, TrendingDown, Info } from 'lucide-react';
+import { ArrowLeft, User, Mail, Phone, FileText, Check, CreditCard, Shield, ArrowRight, Calculator, TrendingDown, Info, Wallet } from 'lucide-react';
 import { useBNPL } from '../hooks/useBNPL';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
@@ -8,6 +8,7 @@ import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
 import { Progress } from '../components/ui/progress';
 import Logo from '../components/Logo';
+import WalletConnector from '../components/WalletConnector';
 import { Customer } from '../types';
 import pricingService, { PricingBreakdown } from '../services/pricingService';
 
@@ -32,6 +33,8 @@ export function ContractPage() {
   const [pricingBreakdown, setPricingBreakdown] = useState<PricingBreakdown | null>(null);
   const [loadingPricing, setLoadingPricing] = useState(false);
   const [activeModal, setActiveModal] = useState<'terms' | 'privacy' | null>(null);
+  const [walletConnected, setWalletConnected] = useState(true); // Start as connected with demo
+  const [walletType, setWalletType] = useState<string>('demo');
 
   useEffect(() => {
     const calculatePricing = async () => {
@@ -57,6 +60,12 @@ export function ContractPage() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleWalletSelect = (publicKey: string, walletType: string, walletName: string) => {
+    setFormData(prev => ({ ...prev, stellarPublicKey: publicKey }));
+    setWalletConnected(true);
+    setWalletType(walletType);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -106,6 +115,25 @@ export function ContractPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Form */}
           <div className="lg:col-span-2 space-y-6">
+            {/* Wallet Connection */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Wallet className="w-5 h-5 mr-2" />
+                  Connect Your Stellar Wallet
+                </CardTitle>
+                <CardDescription>
+                  Choose how you'd like to connect your Stellar account for this BNPL contract
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <WalletConnector
+                  selectedPublicKey={formData.stellarPublicKey}
+                  onWalletSelect={handleWalletSelect}
+                />
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
@@ -186,17 +214,34 @@ export function ContractPage() {
                     <label htmlFor="stellarPublicKey" className="text-sm font-medium">
                       Stellar Public Key *
                     </label>
-                    <Input
-                      id="stellarPublicKey"
-                      name="stellarPublicKey"
-                      value={formData.stellarPublicKey}
-                      onChange={handleInputChange}
-                      placeholder="GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-                      required
-                      className="font-mono text-sm h-10"
-                    />
+                    <div className="relative">
+                      <Input
+                        id="stellarPublicKey"
+                        name="stellarPublicKey"
+                        value={formData.stellarPublicKey}
+                        onChange={handleInputChange}
+                        placeholder="GXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                        required
+                        readOnly={walletConnected && walletType !== 'manual'}
+                        className={`font-mono text-sm h-10 ${
+                          walletConnected && walletType !== 'manual' 
+                            ? 'bg-muted cursor-not-allowed' 
+                            : ''
+                        }`}
+                      />
+                      {walletConnected && walletType !== 'manual' && (
+                        <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                          <Badge variant="secondary" className="text-xs">
+                            Connected via {walletType === 'freighter' ? 'Freighter' : 'Demo'}
+                          </Badge>
+                        </div>
+                      )}
+                    </div>
                     <p className="text-xs text-muted-foreground">
-                      Your Stellar account public key for receiving payments
+                      {walletConnected && walletType !== 'manual'
+                        ? `Connected via ${walletType === 'freighter' ? 'Freighter wallet' : 'demo account'}`
+                        : 'Your Stellar account public key for receiving payments'
+                      }
                     </p>
                   </div>
 
